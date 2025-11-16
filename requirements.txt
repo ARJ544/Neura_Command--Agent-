@@ -52,7 +52,9 @@ pyasn1==0.6.1
 pyasn1_modules==0.4.2
 pydantic==2.12.4
 pydantic_core==2.41.5
+PyGetWindow==0.0.9
 Pygments==2.19.2
+PyRect==0.2.0
 python-dateutil==2.9.0.post0
 PyYAML==6.0.3
 pyzmq==27.1.0
