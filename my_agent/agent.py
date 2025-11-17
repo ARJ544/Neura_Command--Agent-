@@ -14,7 +14,7 @@ if "GOOGLE_API_KEY" not in os.environ:
     
 # LLM
 llm = ChatGoogleGenerativeAI(
-    model="gemini-2.0-flash-lite",
+    model="gemini-2.0-flash",
     temperature=0,
     max_tokens=None,
     timeout=None,

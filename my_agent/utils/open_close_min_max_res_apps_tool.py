@@ -3,7 +3,8 @@ import subprocess, time, pyautogui
 from pathlib import Path
 from langchain_core.tools import tool
 import pygetwindow as gw
-import difflib
+# import difflib
+from rapidfuzz import process, fuzz
 
 def get_all_file_paths_and_names(directory_path):
     """
@@ -37,12 +38,12 @@ directory = 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs'
 directory2 = f"{os.path.expanduser('~')}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs"
 
 @tool
-def open_app(app_name: str):
+def open_app(window_name: str):
     """
-    Opens any Windows application by any provided name. Any name of application is valid.
+    Opens a Windows application by any provided name. Valid and invalid both names are allowed.
 
     Args:
-        app_name (str): Name of any app or executable.
+        window_name (str): Name of any app or executable.
 
     Returns:
         str: Success or error message.
@@ -50,31 +51,40 @@ def open_app(app_name: str):
     all_apps_data = get_all_file_paths_and_names(directory)
     extra_apps = get_all_file_paths_and_names(directory2)
     all_apps_data.extend(extra_apps)
-    
-    appname = []
-    app_paths = []
-    for app in all_apps_data:
-        app_paths.append(app['path'])
-        
-    for app in all_apps_data:
-        appname.append(app['name'])
-        
-    app_name_matches = difflib.get_close_matches(app_name.lower(), [name.lower() for name in appname], n=1, cutoff=0.5)
-    
-    if app_name_matches:
-        matched_app = app_name_matches[0]
-        index_of_name = appname.index(matched_app)
-        final_path_of_app = app_paths[index_of_name]
-        try:
-            subprocess.Popen(f"{final_path_of_app}", shell=True)
-            return f"'{matched_app}' has been opened successfully."
-        except Exception as e:
-            return f"Failed to open '{matched_app}': {e}"
-    else:
+
+
+    appname = [app['name'] for app in all_apps_data]
+    app_paths = [app['path'] for app in all_apps_data]
+
+
+    names_lower = [name.lower() for name in appname]
+
+    match = process.extractOne(
+        window_name.lower(),
+        names_lower,
+        scorer=fuzz.partial_ratio
+    )
+
+    if match is None or match[1] < 70:
         pyautogui.press("win")
         time.sleep(1)
-        pyautogui.write(app_name)
-        return f"{app_name} was not an application, therefore it was searched in windows search bar"
+        pyautogui.write(window_name)
+        return f"{window_name} was not an application, so it was searched in the Windows search bar."
+
+    
+    matched_name_lower = match[0]
+
+
+    index = names_lower.index(matched_name_lower)
+
+    final_path = app_paths[index]
+    original_name = appname[index]
+
+    try:
+        subprocess.Popen(final_path, shell=True)
+        return f"'{original_name}' has been opened successfully."
+    except Exception as e:
+        return f"Failed to open '{original_name}': {e}"
 
 
 def find_closest_window_title(query : str):
@@ -82,7 +92,7 @@ def find_closest_window_title(query : str):
     From active windows applications get the most closest app name
     """
     titles = gw.getAllTitles()
-    result = difflib.get_close_matches(query, titles, n=1, cutoff=0.5)
+    result = process.extractOne(query, titles, scorer=fuzz.partial_ratio)
     return result[0] if result else None
 
 @tool
