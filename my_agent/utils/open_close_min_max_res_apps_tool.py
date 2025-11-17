@@ -78,6 +78,9 @@ def open_app(app_name: str):
 
 
 def find_closest_window_title(query : str):
+    """
+    From active windows applications get the most closest app name
+    """
     titles = gw.getAllTitles()
     result = difflib.get_close_matches(query, titles, n=1, cutoff=0.5)
     return result[0] if result else None
@@ -166,3 +169,29 @@ def restore_app(window_name: str):
         return f"{window_to_restore} was restored "
     else:
         return f"No window found with a title close to '{window_name}'"
+
+@tool
+def switch_btwn_apps(window_name: str):
+    """
+    Switch between apps just like alt+tab.
+
+    Args:
+        window_name (str): The full or partial title/name of the window app
+        you want to switch to.
+
+    Returns:
+        str: Message indicating whether the matching window was
+        successfully switched or not found.
+    """
+    window_to_switch = find_closest_window_title(window_name)
+    if window_to_switch:
+        window_handle = gw.getWindowsWithTitle(window_to_switch)[0]
+        if not window_handle.isMaximized:
+            window_handle.restore()
+            window_handle.activate()
+            return f"{window_to_switch} is active now. "
+        else:
+            window_handle.activate()
+            return f"{window_to_switch} is active now. "
+    else:
+        return f"No window found with a title '{window_name}' to switch to."

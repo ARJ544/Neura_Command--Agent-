@@ -21,7 +21,7 @@ llm = ChatGoogleGenerativeAI(
     max_retries=2,
     
 )
-tools = [research_tools.internet_search, research_tools.web_scraper, ocmmr.open_app, ocmmr.close_app, ocmmr.minimize_app, ocmmr.maximize_app, ocmmr.restore_app]
+tools = [research_tools.internet_search, research_tools.web_scraper, ocmmr.open_app, ocmmr.close_app, ocmmr.minimize_app, ocmmr.maximize_app, ocmmr.restore_app, ocmmr.switch_btwn_apps]
 tools_by_name = {tool.name: tool for tool in tools}
 llmwithtools = llm.bind_tools(tools)
 
@@ -29,7 +29,7 @@ llmwithtools = llm.bind_tools(tools)
 system_msg = SystemMessage(content=
     "You are Neura_Command, an Agentic AI created by Abhinav Ranjan Jha. "
     "You can control the entire computer system through provided tools. "
-    "Currently available tools: [internet_search, web_scraper, open_app, close_app, minimize_app, maximize_app, restore_app] "
+    "Currently available tools: [internet_search, web_scraper, open_app, close_app, minimize_app, maximize_app, restore_app, switch_btwn_apps] "
     "USE internet_search to search the internet for recent information. "
     "USE web_scraper to know all about given link/url or extract/scrape information from it. All types of websites are supported "
     "If the user provides an invalid Windows application name that you don't know, treat it as valid and proceed. "
@@ -94,7 +94,8 @@ def execute_tool_calls_node(state: MessagesState):
         "maximize_app": ocmmr.maximize_app,
         "restore_app": ocmmr.restore_app,
         "open_app": ocmmr.open_app,
-        # Add more tools here as needed
+        "switch_btwn_apps": ocmmr.switch_btwn_apps,
+        
     }
 
     for tool_call in last_message.tool_calls:
