@@ -153,6 +153,7 @@ def maximize_app(window_name: str):
     window_to_maximize = find_closest_window_title(window_name)
     if window_to_maximize:
         window_handle = gw.getWindowsWithTitle(window_to_maximize)[0]
+        window_handle.minimize()
         window_handle.maximize()
         window_handle.activate()
         return f"{window_to_maximize} was maximized "
@@ -175,7 +176,9 @@ def restore_app(window_name: str):
     window_to_restore = find_closest_window_title(window_name)
     if window_to_restore:
         window_handle = gw.getWindowsWithTitle(window_to_restore)[0]
+        window_handle.minimize()
         window_handle.restore()
+        window_handle.activate()
         return f"{window_to_restore} was restored "
     else:
         return f"No window found with a title close to '{window_name}'"
@@ -197,10 +200,13 @@ def switch_btwn_apps(window_name: str):
     if window_to_switch:
         window_handle = gw.getWindowsWithTitle(window_to_switch)[0]
         if not window_handle.isMaximized:
+            window_handle.minimize()
             window_handle.restore()
             window_handle.activate()
             return f"{window_to_switch} is active now. "
         else:
+            window_handle.minimize()
+            window_handle.maximize()
             window_handle.activate()
             return f"{window_to_switch} is active now. "
     else:
