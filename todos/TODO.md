@@ -2,7 +2,6 @@
 
 ## 1. System Control
 - [x] Open/close/minimize/maximize/restore apps
-- [ ] Switch windows and applications
 - [x] Launch apps by name/path
 - [ ] Control system settings (brightness, volume, WiFi, Bluetooth)
 <!-- - [ ] Shutdown / restart / sleep / lock -->
