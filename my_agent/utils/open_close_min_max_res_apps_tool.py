@@ -1,5 +1,5 @@
 import os
-import subprocess
+import subprocess, time, pyautogui
 from pathlib import Path
 from langchain_core.tools import tool
 import pygetwindow as gw
@@ -39,7 +39,7 @@ directory2 = f"{os.path.expanduser('~')}\\AppData\\Roaming\\Microsoft\\Windows\\
 @tool
 def open_app(app_name: str):
     """
-    Opens a Windows application by any provided name. Valid and invalid both names are allowed.
+    Opens any Windows application by any provided name. Any name of application is valid.
 
     Args:
         app_name (str): Name of any app or executable.
@@ -71,7 +71,11 @@ def open_app(app_name: str):
         except Exception as e:
             return f"Failed to open '{matched_app}': {e}"
     else:
-        return f"No app found with name '{app_name}'"
+        pyautogui.press("win")
+        time.sleep(1)
+        pyautogui.write(app_name)
+        return f"{app_name} was not an application, therefore it was searched in windows search bar"
+
 
 def find_closest_window_title(query : str):
     titles = gw.getAllTitles()

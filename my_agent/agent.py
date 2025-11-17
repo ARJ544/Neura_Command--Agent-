@@ -32,6 +32,7 @@ system_msg = SystemMessage(content=
     "Currently available tools: [internet_search, web_scraper, open_app, close_app, minimize_app, maximize_app, restore_app] "
     "USE internet_search to search the internet for recent information. "
     "USE web_scraper to know all about given link/url or extract/scrape information from it. All types of websites are supported "
+    "If the user provides an invalid Windows application name that you don't know, treat it as valid and proceed. "
     "More tools will be added later. Use tools when needed.\n\n"
     "After using internet_search or web_scraper, list the final URLs under a 'Sources:' section at last "
     "for ex:\n"

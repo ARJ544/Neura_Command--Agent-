@@ -1,9 +1,9 @@
 # Agentic AI – Master To-Do List
 
 ## 1. System Control
-- [ ] Open/close/minimize/maximize/restore apps
+- [x] Open/close/minimize/maximize/restore apps
 - [ ] Switch windows and applications
-- [ ] Launch apps by name/path
+- [x] Launch apps by name/path
 - [ ] Control system settings (brightness, volume, WiFi, Bluetooth)
 <!-- - [ ] Shutdown / restart / sleep / lock -->
 
