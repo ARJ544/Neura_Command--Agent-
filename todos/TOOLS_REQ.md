@@ -21,8 +21,8 @@
 - os
 - pathlib
 
-### 1.5 Control system settings (brightness, volume, WiFi, Bluetooth)
-- Windows: pycaw, wmi, pythonnet  
+### 1.5 Control system settings (brightness, volume)
+- Windows: pycaw, screen_brightness_control 
 - Linux: dbus, subprocess  
 - Mac: osascript
 
