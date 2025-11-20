@@ -1,3 +1,14 @@
+"""
+Tools to open, close, minimize, maximize, restore, and switch between Windows applications.
+Provided Tools:
+- open_app: Opens a Windows application by name.
+- close_app: Closes a Windows application window.
+- minimize_app: Minimizes a Windows application window.
+- maximize_app: Maximizes a Windows application window.
+- restore_app: Restores a minimized or maximized Windows application window.
+- switch_btwn_apps: Switches between Windows application windows.
+"""
+
 import os
 import subprocess, time, pyautogui
 from pathlib import Path

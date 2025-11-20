@@ -1,3 +1,11 @@
+"""
+Research tools using Tavily API tavily_client.extract and tavily_client.search
+Provided tools:
+- internet_search: Perform an online web search using the Tavily Search API.
+- web_scraper: Extract/Scrape detailed content directly from any specific webpages using Tavily's extractor.
+
+"""
+
 import getpass
 import os
 from langchain_core.tools import tool
