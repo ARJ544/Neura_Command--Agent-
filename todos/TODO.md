@@ -3,7 +3,7 @@
 ## 1. System Control
 - [x] Open/close/minimize/maximize/restore apps
 - [x] Launch apps by name/path
-- [ ] Control system settings (brightness, volume, WiFi, Bluetooth)
+- [x] Control system settings (brightness, volume)
 <!-- - [ ] Shutdown / restart / sleep / lock -->
 
 ## 2. File & Folder Operations
