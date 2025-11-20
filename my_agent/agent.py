@@ -1,5 +1,6 @@
 from utils import open_close_min_max_res_apps_tool as ocmmr
 from utils import research_tools
+from utils import control_brightness_volume_tool as cbv
 from langgraph.graph import StateGraph, MessagesState, START, END
 import getpass
 import os
@@ -14,14 +15,14 @@ if "GOOGLE_API_KEY" not in os.environ:
     
 # LLM
 llm = ChatGoogleGenerativeAI(
-    model="gemini-2.0-flash",
+    model="gemini-2.0-flash-lite",
     temperature=0,
     max_tokens=None,
     timeout=None,
     max_retries=2,
     
 )
-tools = [research_tools.internet_search, research_tools.web_scraper, ocmmr.open_app, ocmmr.close_app, ocmmr.minimize_app, ocmmr.maximize_app, ocmmr.restore_app, ocmmr.switch_btwn_apps]
+tools = [research_tools.internet_search, research_tools.web_scraper, ocmmr.open_app, ocmmr.close_app, ocmmr.minimize_app, ocmmr.maximize_app, ocmmr.restore_app, ocmmr.switch_btwn_apps, cbv.set_volume]
 tools_by_name = {tool.name: tool for tool in tools}
 llmwithtools = llm.bind_tools(tools)
 
@@ -29,7 +30,7 @@ llmwithtools = llm.bind_tools(tools)
 system_msg = SystemMessage(content=
     "You are Neura_Command, an Agentic AI created by Abhinav Ranjan Jha. "
     "You can control the entire computer system through provided tools. "
-    "Currently available tools: [internet_search, web_scraper, open_app, close_app, minimize_app, maximize_app, restore_app, switch_btwn_apps] "
+    "Currently available tools: [internet_search, web_scraper, open_app, close_app, minimize_app, maximize_app, restore_app, switch_btwn_apps, set_volume] "
     "USE internet_search to search the internet for recent information. "
     "USE web_scraper to know all about given link/url or extract/scrape information from it. All types of websites are supported "
     "If the user provides an invalid Windows application name that you don't know, treat it as valid and proceed. "
@@ -95,6 +96,7 @@ def execute_tool_calls_node(state: MessagesState):
         "restore_app": ocmmr.restore_app,
         "open_app": ocmmr.open_app,
         "switch_btwn_apps": ocmmr.switch_btwn_apps,
+        "set_volume": cbv.set_volume,
         
     }
 
