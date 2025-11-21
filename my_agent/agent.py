@@ -5,6 +5,7 @@ from langgraph.graph import StateGraph, MessagesState, START, END
 import getpass
 import os
 from langchain_google_genai import ChatGoogleGenerativeAI
+from google.api_core import exceptions
 from langchain_core.messages import HumanMessage,SystemMessage, ToolMessage, AIMessage
 from langgraph.checkpoint.memory import MemorySaver
 import asyncio
@@ -156,6 +157,12 @@ config = {"configurable": {"thread_id": "ARJ"}}
 
 # input1 = {"messages": [HumanMessage(content="open control panel")]}
 # RESULTS — Continuous loop mode (REPL)
+solution = """
+Try one of the following Solution:
+    i) Wait for a minute
+    ii) Restart the App
+    iii) Change the model
+"""
 
 async def run_loop():
     print("\nNeura_Command is ready. Type your query below.\n")
@@ -165,13 +172,37 @@ async def run_loop():
         
         input_data = {"messages": [HumanMessage(content=user_input)]}
 
-        async for event in app.astream_events(input_data, config):
-            if event["event"] == "on_chat_model_stream":
-                chunk = event["data"]["chunk"].content
-                if chunk:
-                    print(chunk, end="", flush=True)
+        
+        try:
+            async for event in app.astream_events(input_data, config):
+                if event["event"] == "on_chat_model_stream":
+                    chunk = event["data"]["chunk"].content
+                    if chunk:
+                        print(chunk, end="", flush=True)
+                print()
+                        
+        except exceptions.InvalidArgument as e:
+            print("Invalid input:", e)
 
-        print()  # new line after response
+        except exceptions.PermissionDenied as e:
+            print("Permission denied:", e)
+
+        except exceptions.ResourceExhausted as e:
+            print("Rate limit exceeded:", e)
+            print(solution)
+
+        except exceptions.NotFound as e:
+            print("Model not found:", e)
+
+        except exceptions.InternalServerError as e:
+            print("Server error:", e)
+
+        except exceptions.ServiceUnavailable as e:
+            print("Service unavailable:", e)
+
+        except Exception as e:
+            print("Unknown error:", e)
+
 
 
 asyncio.run(run_loop())
