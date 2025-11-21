@@ -36,7 +36,7 @@ def create_folder(name_of_folder: str):
 @tool
 def rename_folder(current_name: str, new_name: str):
     """
-    Renames an existing folder on the Desktop.
+    Renames an existing folder on the Desktop after asking user for confirmation.
 
     Args:
         current_name (str): The current name of the folder to be renamed. It can include subfolder names separated by forward slashes (e.g., "OldFolder/xyz").
