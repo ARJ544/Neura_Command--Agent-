@@ -1,6 +1,7 @@
-from utils import open_close_min_max_res_apps_tool as ocmmr
 from utils import research_tools
+from utils import open_close_min_max_res_apps_tool as ocmmr
 from utils import control_brightness_volume_tool as cbv
+from utils import create_rename_delete_folder_tool as crdf
 from langgraph.graph import StateGraph, MessagesState, START, END
 import getpass
 import os
@@ -23,7 +24,7 @@ llm = ChatGoogleGenerativeAI(
     max_retries=2,
     
 )
-tools = [research_tools.internet_search, research_tools.web_scraper, ocmmr.open_app, ocmmr.close_app, ocmmr.minimize_app, ocmmr.maximize_app, ocmmr.restore_app, ocmmr.switch_btwn_apps, cbv.set_volume, cbv.set_brightness]
+tools = [research_tools.internet_search, research_tools.web_scraper, ocmmr.open_app, ocmmr.close_app, ocmmr.minimize_app, ocmmr.maximize_app, ocmmr.restore_app, ocmmr.switch_btwn_apps, cbv.set_volume, cbv.set_brightness, crdf.create_folder, crdf.rename_folder, crdf.delete_folder]
 tools_by_name = {tool.name: tool for tool in tools}
 llmwithtools = llm.bind_tools(tools)
 
@@ -98,6 +99,9 @@ def execute_tool_calls_node(state: MessagesState):
         "switch_btwn_apps": ocmmr.switch_btwn_apps,
         "set_volume": cbv.set_volume,
         "set_brightness": cbv.set_brightness,
+        "create_folder": crdf.create_folder,
+        "rename_folder": crdf.rename_folder,
+        "delete_folder": crdf.delete_folder,
         
     }
 
@@ -168,7 +172,7 @@ async def run_loop():
     print("\nNeura_Command is ready. Type your query below.\n")
 
     while True:
-        user_input = input("\nYou: ")
+        user_input = input(r"\nYou: ")
         
         input_data = {"messages": [HumanMessage(content=user_input)]}
 
