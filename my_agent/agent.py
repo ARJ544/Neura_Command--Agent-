@@ -2,6 +2,7 @@ from utils import research_tools
 from utils import open_close_min_max_res_apps_tool as ocmmr
 from utils import control_brightness_volume_tool as cbv
 from utils import create_rename_delete_folder_tool as crdf
+from utils import create_rename_delete_file_tool as crdfile
 from langgraph.graph import StateGraph, MessagesState, START, END
 import getpass
 import os
@@ -24,7 +25,7 @@ llm = ChatGoogleGenerativeAI(
     max_retries=2,
     
 )
-tools = [research_tools.internet_search, research_tools.web_scraper, ocmmr.open_app, ocmmr.close_app, ocmmr.minimize_app, ocmmr.maximize_app, ocmmr.restore_app, ocmmr.switch_btwn_apps, cbv.set_volume, cbv.set_brightness, crdf.create_folder, crdf.rename_folder, crdf.delete_folder]
+tools = [research_tools.internet_search, research_tools.web_scraper, ocmmr.open_app, ocmmr.close_app, ocmmr.minimize_app, ocmmr.maximize_app, ocmmr.restore_app, ocmmr.switch_btwn_apps, cbv.set_volume, cbv.set_brightness, crdf.create_folder, crdf.rename_folder, crdf.delete_folder, crdfile.create_add_content_file, crdfile.rename_file, crdfile.delete_file]
 tools_by_name = {tool.name: tool for tool in tools}
 llmwithtools = llm.bind_tools(tools)
 
@@ -102,6 +103,9 @@ def execute_tool_calls_node(state: MessagesState):
         "create_folder": crdf.create_folder,
         "rename_folder": crdf.rename_folder,
         "delete_folder": crdf.delete_folder,
+        "create_add_content_file": crdfile.create_add_content_file,
+        "rename_file": crdfile.rename_file,
+        "delete_file": crdfile.delete_file,
         
     }
 
