@@ -7,8 +7,8 @@
 <!-- - [ ] Shutdown / restart / sleep / lock -->
 
 ## 2. File & Folder Operations
-- [ ] Create/rename/delete files
-- [ ] Create/rename/delete folders
+- [x] Create/rename/delete files
+- [x] Create/rename/delete folders
 - [ ] Move/copy files & folders
 - [ ] Extract zip/rar archives
 - [ ] Search for files
