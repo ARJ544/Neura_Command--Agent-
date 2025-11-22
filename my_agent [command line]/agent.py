@@ -18,6 +18,11 @@ from google.api_core import exceptions
 from langchain_core.messages import HumanMessage,SystemMessage, ToolMessage, AIMessage
 from langgraph.checkpoint.memory import MemorySaver
 import asyncio
+from colorama import Fore, Style, init
+from rich.console import Console
+from rich.markdown import Markdown
+
+init(autoreset=True)
 load_dotenv()
 
 def ask_and_save():
@@ -72,7 +77,7 @@ llm = ChatGoogleGenerativeAI(
     temperature=0,
     max_tokens=None,
     timeout=None,
-    max_retries=2,
+    max_retries=0,
     google_api_key=gemini_key,
 )
 tools = [research_tools.internet_search, research_tools.web_scraper, ocmmr.open_app, ocmmr.close_app, ocmmr.minimize_app, ocmmr.maximize_app, ocmmr.restore_app, ocmmr.switch_btwn_apps, cbv.set_volume, cbv.set_brightness, crdf.create_folder, crdf.rename_folder, crdf.delete_folder, crdfile.create_add_content_file, crdfile.rename_file, crdfile.delete_file, cup.change_user_preferences]
@@ -103,24 +108,6 @@ def call_llm_node(state: MessagesState):
     if not any(msg.__class__.__name__ == "SystemMessage" for msg in messages):
         messages.insert(0, system_msg)
         
-    print("\n" + "-----"*10 + " All Messages content " + "-----"*10)
-    for msg in messages:
-        if isinstance(msg, SystemMessage):
-            print("system msg =", msg.content)
-        elif isinstance(msg, HumanMessage):
-            print("human msg =", msg.content)
-        # elif isinstance(msg, ToolMessage):
-        #     print(f"tool msg = {msg.content}")
-        elif isinstance(msg, AIMessage):
-            print("assistant msg =", msg.content)
-            print("usage_metadata = ", msg.usage_metadata)
-    print("-----"*10 + "End of All Messages content " + "-----"*10 + "\n")
-
-    # print("-----"*50)
-    # print(f"\nAll Messages = {"messages"}\n")
-    print("-----"*10 + " Last Message content " + "-----"*10)
-    print(f"\nLast message = {messages[-1]}\n")
-    print("-----"*10 + "End of Last Message content " + "-----"*10)
     response = llmwithtools.invoke(messages)
     return {"messages": [response]}
 
@@ -137,7 +124,6 @@ def execute_tool_calls_node(state: MessagesState):
     last_message = state["messages"][-1]
     tool_outputs = []
 
-    print("\n" + "-----" * 10 + " Tool Calls to be executed " + "-----" * 10)
 
     # Map your tool names to the actual callable functions
     tools_map = {
@@ -166,9 +152,10 @@ def execute_tool_calls_node(state: MessagesState):
         args = tool_call["args"]
 
         if tool_name in tools_map:
-            print(f"Invoking {tool_name} with args:", args)
+            print(Fore.YELLOW + f"Invoking {tool_name} with args: {args}" + Style.RESET_ALL)
             try:
                 result = tools_map[tool_name].invoke(args)
+                print(Fore.YELLOW + f"[Tool Executed] {result}" + Style.RESET_ALL + "\n")
                 tool_outputs.append(ToolMessage(tool_call_id=tool_call['id'], content=str(result)))
             except Exception as e:
                 tool_outputs.append(
@@ -179,8 +166,6 @@ def execute_tool_calls_node(state: MessagesState):
             tool_outputs.append(
                 ToolMessage(tool_call_id=tool_call['id'], content=f"No tool found with name '{tool_name}'")
             )
-
-    print("-----" * 10 + " End of Tool Calls execution " + "-----" * 10 + "\n")
 
     return {"messages": tool_outputs}
 
@@ -214,8 +199,9 @@ config = {"configurable": {"thread_id": "ARJ"}}
 
 # RESULTS
 solution = """
+Do solution i) first if problem persists do ii) if still then do iii)
 Try one of the following Solution:
-    i) Wait for a minute
+    i) Wait for few seconds and message again
     ii) Restart the App
     iii) Change the model
 """
@@ -223,40 +209,50 @@ Try one of the following Solution:
 async def run_loop():
     os.system("cls" if os.name == "nt" else "clear")
     print("\nNeura_Command is ready. Type your query below.\n")
-
+    console = Console()
+    
     while True:
-        user_input = input(r"You: ")
+        user_input = input("\n" + Fore.CYAN + r"You: " + Style.RESET_ALL)
+        print()
         input_data = {"messages": [HumanMessage(content=user_input)]}
-        
+        markdown_text = ""
         try:
-            async for event in app.astream_events(input_data, config):
-                if event["event"] == "on_chat_model_stream":
-                    chunk = event["data"]["chunk"].content
-                    if chunk:
-                        print(chunk, end="", flush=True)
+            result = app.invoke(input_data, config)
+            markdown_text = result["messages"][-1].content
+            md = Markdown(markdown_text)
+            console.print(md, style="#2bbd65")
+            # async for event in app.astream_events(input_data, config):
+            #     if event["event"] == "on_chat_model_stream":
+            #         chunk = event["data"]["chunk"].content
+            #         if chunk:
+            #             markdown_text = chunk
+            #             md = Markdown(markdown_text)
+            #             console.print(md, style="#2bbd65")
+            #             print(chunk, end="", flush=True)
+                        # print(Fore.LIGHTGREEN_EX + chunk + Style.RESET_ALL, end="", flush=True)
                 # print()
                         
         except exceptions.InvalidArgument as e:
-            print("Invalid input:", e)
+            print(Fore.RED + "Invalid input:", e)
 
         except exceptions.PermissionDenied as e:
-            print("Permission denied:", e)
+            print(Fore.RED + "Permission denied:", e)
 
         except exceptions.ResourceExhausted as e:
-            print("Rate limit exceeded:", e)
-            print(solution)
+            print(Fore.RED + f"Rate limit exceeded:" + Style.RESET_ALL)
+            print(Fore.LIGHTMAGENTA_EX + solution + Style.RESET_ALL)
 
         except exceptions.NotFound as e:
-            print("Model not found:", e)
+            print(Fore.RED + "Model not found:", e)
 
         except exceptions.InternalServerError as e:
-            print("Server error:", e)
+            print(Fore.RED + "Server error:", e)
 
         except exceptions.ServiceUnavailable as e:
-            print("Service unavailable:", e)
+            print(Fore.RED + "Service unavailable:", e)
 
         except Exception as e:
-            print("Unknown error:", e)
+            print(Fore.RED + "Unknown error:", e)
 
 
 
