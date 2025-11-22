@@ -1,6 +1,7 @@
 .env
 .venv
 t.py
+user_prefs.json
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
