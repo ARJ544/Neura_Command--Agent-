@@ -38,13 +38,7 @@
 ### Browser
 - [ ] Open/close/switch tabs
 
-## 7. Safety & Permissions
-- [ ] Ask confirmation for dangerous actions
-- [ ] Maintain logs
-- [ ] Allow/deny action rules
-- [ ] Safe-mode execution
-
-## 8. Developer Tools Integration
+## 7. Developer Tools Integration
 - [ ] Auto-generate boilerplate code
 - [ ] Debugging assistance
 - [ ] Auto-fix compile errors
