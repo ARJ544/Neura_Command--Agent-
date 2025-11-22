@@ -20,68 +20,50 @@ from langgraph.checkpoint.memory import MemorySaver
 import asyncio
 load_dotenv()
 
-if "GOOGLE_API_KEY" not in os.environ:
-    env_path = ".env"
+def ask_and_save():
+    name = input("Enter your name: ")
+    gemini_key = input("Enter your Gemini API: ")
+    tavily_key = input("Enter your Tavily API: ")
 
-    if os.path.exists(env_path):
-        with open(env_path, 'r') as f:
-            values = f.readlines()
+    with open(env_path, "w") as f:
+        f.write(f"NAME={name}\n")
+        f.write(f"GOOGLE_API_KEY={gemini_key}\n")
+        f.write(f"TAVILY_API_KEY={tavily_key}\n")
+
+    return name, gemini_key, tavily_key
+def open_read_check_env(env_path):
+    with open(env_path, 'r') as f:
+        values = f.readlines()
 
         if values == [] or len(values) < 3:
-            name = input("Enter your name: ")
-            gemini_key = input("Enter your Gemini API: ")
-            tavily_key = input("Enter your Tavily API: ")
-
-            with open(env_path, 'w') as f:
-                f.write(f"NAME={name}\n")
-                f.write(f"GOOGLE_API_KEY={gemini_key}\n")
-                f.write(f"TAVILY_API_KEY={tavily_key}\n")
-
+            name, gemini_key, tavily_key = ask_and_save()
             values = [f"NAME={name}\n", f"GOOGLE_API_KEY={gemini_key}\n", f"TAVILY_API_KEY={tavily_key}\n"]
 
         name = values[0].strip().split("=")[1]
         gemini_key = values[1].strip().split("=")[1]
         tavily_key = values[2].strip().split("=")[1]
 
-        print(f"name={name}, gemini_key={gemini_key}, tavily_key={tavily_key}")
+    return name, gemini_key, tavily_key
+ 
+if "GOOGLE_API_KEY" not in os.environ:
+    env_path = ".env"
+
+    if os.path.exists(env_path):
+        name, gemini_key, tavily_key = open_read_check_env(env_path)
+        print(f".env exists!!! name={name}, gemini_key={gemini_key}, tavily_key={tavily_key}")
 
     else:
-        name = input("Enter your name: ")
-        gemini_key = input("Enter your Gemini API: ")
-        tavily_key = input("Enter your Tavily API: ")
-
-        with open(env_path, 'w') as f:
-            f.write(f"NAME={name}\n")
-            f.write(f"GOOGLE_API_KEY={gemini_key}\n")
-            f.write(f"TAVILY_API_KEY={tavily_key}\n")
-
-        print("New .env file created successfully!")
+        name, gemini_key, tavily_key = ask_and_save()
+        print(f"New .env file created successfully! With name = {name}, gemini_key = {gemini_key}, tavily_key = {tavily_key}")
 else:
     gemini_key = os.getenv("GOOGLE_API_KEY")
     tavily_key = os.getenv("TAVILY_API_KEY")
     name = os.environ.get("NAME")
+    print(f"Gemini_Api_Key found!!! name = {name} gemini_key = {gemini_key} tavily_key = {tavily_key}")
 
 if not gemini_key or not tavily_key or not name:
-    with open(env_path, 'r') as f:
-            values = f.readlines()
-
-            if values == [] or len(values) < 3:
-                name = input("Enter your name: ")
-                gemini_key = input("Enter your Gemini API: ")
-                tavily_key = input("Enter your Tavily API: ")
-
-                with open(env_path, 'w') as f:
-                    f.write(f"NAME={name}\n")
-                    f.write(f"GOOGLE_API_KEY={gemini_key}\n")
-                    f.write(f"TAVILY_API_KEY={tavily_key}\n")
-
-                values = [f"NAME={name}\n", f"GOOGLE_API_KEY={gemini_key}\n", f"TAVILY_API_KEY={tavily_key}\n"]
-
-            name = values[0].strip().split("=")[1]
-            gemini_key = values[1].strip().split("=")[1]
-            tavily_key = values[2].strip().split("=")[1]
-
-            print(f"name={name}, gemini_key={gemini_key}, tavily_key={tavily_key}")
+    name, gemini_key, tavily_key = open_read_check_env(env_path)
+    print(f".env exists!!! Variables wasn't Found!!!\n Created name={name}, gemini_key={gemini_key}, tavily_key={tavily_key}")
 
 
 # LLM
