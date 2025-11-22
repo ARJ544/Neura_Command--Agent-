@@ -21,6 +21,7 @@ import asyncio
 from colorama import Fore, Style, init
 from rich.console import Console
 from rich.markdown import Markdown
+from rich.progress import Progress, SpinnerColumn, TextColumn
 
 init(autoreset=True)
 load_dotenv()
@@ -217,20 +218,19 @@ async def run_loop():
         input_data = {"messages": [HumanMessage(content=user_input)]}
         markdown_text = ""
         try:
-            result = app.invoke(input_data, config)
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[progress.description]{task.description}"),
+                transient=True 
+            ) as progress:
+                task = progress.add_task("Generating response...", start=True)
+
+                result = app.invoke(input_data, config)
+
             markdown_text = result["messages"][-1].content
             md = Markdown(markdown_text)
             console.print(md, style="#2bbd65")
-            # async for event in app.astream_events(input_data, config):
-            #     if event["event"] == "on_chat_model_stream":
-            #         chunk = event["data"]["chunk"].content
-            #         if chunk:
-            #             markdown_text = chunk
-            #             md = Markdown(markdown_text)
-            #             console.print(md, style="#2bbd65")
-            #             print(chunk, end="", flush=True)
-                        # print(Fore.LIGHTGREEN_EX + chunk + Style.RESET_ALL, end="", flush=True)
-                # print()
+
                         
         except exceptions.InvalidArgument as e:
             print(Fore.RED + "Invalid input:", e)
@@ -253,7 +253,6 @@ async def run_loop():
 
         except Exception as e:
             print(Fore.RED + "Unknown error:", e)
-
 
 
 asyncio.run(run_loop())
