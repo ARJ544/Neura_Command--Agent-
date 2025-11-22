@@ -176,7 +176,7 @@ async def run_loop():
     print("\nNeura_Command is ready. Type your query below.\n")
 
     while True:
-        user_input = input(r"\nYou: ")
+        user_input = input(r"You: ")
         
         input_data = {"messages": [HumanMessage(content=user_input)]}
 
