@@ -1,21 +1,89 @@
+import warnings
+warnings.filterwarnings(
+    "ignore", 
+    message="Core Pydantic V1 functionality isn't compatible with Python 3.14 or greater."
+)
+
+from utils import change_user_preferences_tool as cup
 from utils import research_tools
 from utils import open_close_min_max_res_apps_tool as ocmmr
 from utils import control_brightness_volume_tool as cbv
 from utils import create_rename_delete_folder_tool as crdf
 from utils import create_rename_delete_file_tool as crdfile
 from langgraph.graph import StateGraph, MessagesState, START, END
-import getpass
 import os
+from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from google.api_core import exceptions
 from langchain_core.messages import HumanMessage,SystemMessage, ToolMessage, AIMessage
 from langgraph.checkpoint.memory import MemorySaver
 import asyncio
+load_dotenv()
 
 if "GOOGLE_API_KEY" not in os.environ:
-    os.environ["GOOGLE_API_KEY"] = getpass.getpass("Enter your Google AI API key: ")
+    env_path = ".env"
 
-    
+    if os.path.exists(env_path):
+        with open(env_path, 'r') as f:
+            values = f.readlines()
+
+        if values == [] or len(values) < 3:
+            name = input("Enter your name: ")
+            gemini_key = input("Enter your Gemini API: ")
+            tavily_key = input("Enter your Tavily API: ")
+
+            with open(env_path, 'w') as f:
+                f.write(f"NAME={name}\n")
+                f.write(f"GOOGLE_API_KEY={gemini_key}\n")
+                f.write(f"TAVILY_API_KEY={tavily_key}\n")
+
+            values = [f"NAME={name}\n", f"GOOGLE_API_KEY={gemini_key}\n", f"TAVILY_API_KEY={tavily_key}\n"]
+
+        name = values[0].strip().split("=")[1]
+        gemini_key = values[1].strip().split("=")[1]
+        tavily_key = values[2].strip().split("=")[1]
+
+        print(f"name={name}, gemini_key={gemini_key}, tavily_key={tavily_key}")
+
+    else:
+        name = input("Enter your name: ")
+        gemini_key = input("Enter your Gemini API: ")
+        tavily_key = input("Enter your Tavily API: ")
+
+        with open(env_path, 'w') as f:
+            f.write(f"NAME={name}\n")
+            f.write(f"GOOGLE_API_KEY={gemini_key}\n")
+            f.write(f"TAVILY_API_KEY={tavily_key}\n")
+
+        print("New .env file created successfully!")
+else:
+    gemini_key = os.getenv("GOOGLE_API_KEY")
+    tavily_key = os.getenv("TAVILY_API_KEY")
+    name = os.environ.get("NAME")
+
+if not gemini_key or not tavily_key or not name:
+    with open(env_path, 'r') as f:
+            values = f.readlines()
+
+            if values == [] or len(values) < 3:
+                name = input("Enter your name: ")
+                gemini_key = input("Enter your Gemini API: ")
+                tavily_key = input("Enter your Tavily API: ")
+
+                with open(env_path, 'w') as f:
+                    f.write(f"NAME={name}\n")
+                    f.write(f"GOOGLE_API_KEY={gemini_key}\n")
+                    f.write(f"TAVILY_API_KEY={tavily_key}\n")
+
+                values = [f"NAME={name}\n", f"GOOGLE_API_KEY={gemini_key}\n", f"TAVILY_API_KEY={tavily_key}\n"]
+
+            name = values[0].strip().split("=")[1]
+            gemini_key = values[1].strip().split("=")[1]
+            tavily_key = values[2].strip().split("=")[1]
+
+            print(f"name={name}, gemini_key={gemini_key}, tavily_key={tavily_key}")
+
+
 # LLM
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.0-flash-lite",
@@ -23,9 +91,9 @@ llm = ChatGoogleGenerativeAI(
     max_tokens=None,
     timeout=None,
     max_retries=2,
-    
+    google_api_key=gemini_key,
 )
-tools = [research_tools.internet_search, research_tools.web_scraper, ocmmr.open_app, ocmmr.close_app, ocmmr.minimize_app, ocmmr.maximize_app, ocmmr.restore_app, ocmmr.switch_btwn_apps, cbv.set_volume, cbv.set_brightness, crdf.create_folder, crdf.rename_folder, crdf.delete_folder, crdfile.create_add_content_file, crdfile.rename_file, crdfile.delete_file]
+tools = [research_tools.internet_search, research_tools.web_scraper, ocmmr.open_app, ocmmr.close_app, ocmmr.minimize_app, ocmmr.maximize_app, ocmmr.restore_app, ocmmr.switch_btwn_apps, cbv.set_volume, cbv.set_brightness, crdf.create_folder, crdf.rename_folder, crdf.delete_folder, crdfile.create_add_content_file, crdfile.rename_file, crdfile.delete_file, cup.change_user_preferences]
 tools_by_name = {tool.name: tool for tool in tools}
 llmwithtools = llm.bind_tools(tools)
 
@@ -44,6 +112,7 @@ system_msg = SystemMessage(content=
     "2. www.example2.com\n"
     "etc.\n"
     "Always respond in Markdown, stay accurate, logical, and agentic and always do what user says no excuses."
+    f"User's name is {name}."
 )
 
 def call_llm_node(state: MessagesState):
@@ -106,6 +175,7 @@ def execute_tool_calls_node(state: MessagesState):
         "create_add_content_file": crdfile.create_add_content_file,
         "rename_file": crdfile.rename_file,
         "delete_file": crdfile.delete_file,
+        "change_user_preferences": cup.change_user_preferences,
         
     }
 
@@ -140,7 +210,6 @@ def should_call_tools(state: MessagesState):
         return "end"
     
 # GRAPH
-
 graph = StateGraph(MessagesState)
 graph.add_node("llm_node", call_llm_node)
 graph.add_node("execute_tool_calls_node", execute_tool_calls_node)
@@ -162,9 +231,6 @@ app = graph.compile(checkpointer=checkpointer)
 config = {"configurable": {"thread_id": "ARJ"}}
 
 # RESULTS
-
-# input1 = {"messages": [HumanMessage(content="open control panel")]}
-# RESULTS — Continuous loop mode (REPL)
 solution = """
 Try one of the following Solution:
     i) Wait for a minute
@@ -173,13 +239,12 @@ Try one of the following Solution:
 """
 
 async def run_loop():
+    os.system("cls" if os.name == "nt" else "clear")
     print("\nNeura_Command is ready. Type your query below.\n")
 
     while True:
         user_input = input(r"You: ")
-        
         input_data = {"messages": [HumanMessage(content=user_input)]}
-
         
         try:
             async for event in app.astream_events(input_data, config):
@@ -187,7 +252,7 @@ async def run_loop():
                     chunk = event["data"]["chunk"].content
                     if chunk:
                         print(chunk, end="", flush=True)
-                print()
+                # print()
                         
         except exceptions.InvalidArgument as e:
             print("Invalid input:", e)

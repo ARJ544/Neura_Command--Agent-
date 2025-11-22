@@ -13,9 +13,71 @@ from tavily import TavilyClient
 from typing import Literal
 
 if "TAVILY_API_KEY" not in os.environ:
-    os.environ["TAVILY_API_KEY"] = getpass.getpass("Enter your TAVILY API key: ")
+    env_path = ".env"
 
-tavily_client = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
+    if os.path.exists(env_path):
+        with open(env_path, 'r') as f:
+            values = f.readlines()
+
+        if values == [] or len(values) < 3:
+            name = input("Enter your name: ")
+            gemini_key = input("Enter your Gemini API: ")
+            tavily_key = input("Enter your Tavily API: ")
+
+            with open(env_path, 'w') as f:
+                f.write(f"NAME={name}\n")
+                f.write(f"GOOGLE_API_KEY={gemini_key}\n")
+                f.write(f"TAVILY_API_KEY={tavily_key}\n")
+
+            values = [f"NAME={name}\n", f"GOOGLE_API_KEY={gemini_key}\n", f"TAVILY_API_KEY={tavily_key}\n"]
+
+        name = values[0].strip().split("=")[1]
+        gemini_key = values[1].strip().split("=")[1]
+        tavily_key = values[2].strip().split("=")[1]
+
+        print(f"name={name}, gemini_key={gemini_key}, tavily_key={tavily_key}")
+
+    else:
+        name = input("Enter your name: ")
+        gemini_key = input("Enter your Gemini API: ")
+        tavily_key = input("Enter your Tavily API: ")
+
+        with open(env_path, 'w') as f:
+            f.write(f"NAME={name}\n")
+            f.write(f"GOOGLE_API_KEY={gemini_key}\n")
+            f.write(f"TAVILY_API_KEY={tavily_key}\n")
+
+        print("New .env file created successfully!")
+
+else:
+    gemini_key = os.getenv("GOOGLE_API_KEY")
+    tavily_key = os.getenv("TAVILY_API_KEY")
+    name = os.environ.get("NAME")
+    
+if not tavily_key or not gemini_key  or not name:
+    with open(env_path, 'r') as f:
+            values = f.readlines()
+
+            if values == [] or len(values) < 3:
+                name = input("Enter your name: ")
+                gemini_key = input("Enter your Gemini API: ")
+                tavily_key = input("Enter your Tavily API: ")
+
+                with open(env_path, 'w') as f:
+                    f.write(f"NAME={name}\n")
+                    f.write(f"GOOGLE_API_KEY={gemini_key}\n")
+                    f.write(f"TAVILY_API_KEY={tavily_key}\n")
+
+                values = [f"NAME={name}\n", f"GOOGLE_API_KEY={gemini_key}\n", f"TAVILY_API_KEY={tavily_key}\n"]
+
+            name = values[0].strip().split("=")[1]
+            gemini_key = values[1].strip().split("=")[1]
+            tavily_key = values[2].strip().split("=")[1]
+
+            print(f"name={name}, gemini_key={gemini_key}, tavily_key={tavily_key}")
+
+
+tavily_client = TavilyClient(api_key=tavily_key)
 
 @tool
 def internet_search(
