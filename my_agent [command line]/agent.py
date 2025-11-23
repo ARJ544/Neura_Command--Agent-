@@ -49,6 +49,25 @@ if not name:
 else:
     print(f"Gemini_Api_Key found!!! name = {name} gemini_key = {gemini_key}\n")
 
+def clear_gemini_api(env_path):
+    if not os.path.exists(env_path):
+        print(Fore.RED + "Wrong API key will be deleted from .env")
+        print(Fore.RED + "Your luck!!! No .env file found. Restart App.")
+        return
+    
+    with open(env_path, "r") as f:
+        lines = f.readlines()
+    new_lines = [line for line in lines if not line.startswith("GOOGLE_API_KEY")]
+
+    if len(new_lines) == len(lines):
+        print(Fore.RED + "GOOGLE_API_KEY not found in .env. May be deleted before!")
+        return
+
+    with open(env_path, "w") as f:
+        f.writelines(new_lines)
+
+    print(Fore.RED + "GOOGLE_API_KEY removed from .env successfully due to invalid API KEY! Restart App to enter valid api key.")
+
 # LLM
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.0-flash-lite",
@@ -239,9 +258,11 @@ async def run_loop():
 
         except exceptions.BadRequest as e:
             print(Fore.RED + "Invalid Api Key Provided:", str(e))
+            clear_gemini_api(ENV_PATH)
             
         except Exception as e:
             print(Fore.RED + "Unknown error:", e)
+            clear_gemini_api(ENV_PATH)
 
-
+            
 asyncio.run(run_loop())
