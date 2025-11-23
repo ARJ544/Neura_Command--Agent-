@@ -11,7 +11,7 @@ from utils import control_brightness_volume_tool as cbv
 from utils import create_rename_delete_folder_tool as crdf
 from utils import create_rename_delete_file_tool as crdfile
 from langgraph.graph import StateGraph, MessagesState, START, END
-import os
+import os, threading
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from google.api_core import exceptions
@@ -22,7 +22,7 @@ from colorama import Fore, Style, init
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.progress import Progress, SpinnerColumn, TextColumn
-
+import time
 init(autoreset=True)
 load_dotenv()
 
@@ -221,21 +221,48 @@ async def run_loop():
     while True:
         user_input = input("\n" + Fore.CYAN + r"You: " + Style.RESET_ALL)
         print()
+
         input_data = {"messages": [HumanMessage(content=user_input)]}
         markdown_text = ""
+
         try:
             with Progress(
                 SpinnerColumn("arc"),
                 TextColumn("[progress.description]{task.description}"),
-                transient=True 
+                transient=True   # hides after exit
             ) as progress:
-                task = progress.add_task("Generating response...", start=True)
 
+                task = progress.add_task("Generating response...", start=False)
+
+                running = True
+
+                def update_description():
+                    messages = [
+                        "Analyzing your message...",
+                        "Thinking deeply...",
+                        "Generating response...",
+                        "Almost done..."
+                    ]
+                    i = 0
+                    while running:
+                        progress.update(task, description=messages[i % len(messages)])
+                        i += 1
+                        time.sleep(0.6)
+
+                updater_thread = threading.Thread(target=update_description)
+                updater_thread.start()
+
+                progress.start_task(task)
                 result = app.invoke(input_data, config)
 
+                running = False
+                updater_thread.join()
+
+            # Convert to Markdown
             markdown_text = result["messages"][-1].content
             md = Markdown(markdown_text)
             console.print(md, style="#2bbd65")
+
                  
         except exceptions.InvalidArgument as e:
             print(Fore.RED + "Invalid input:", e)
