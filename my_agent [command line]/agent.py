@@ -133,8 +133,18 @@ def execute_tool_calls_node(state: MessagesState):
             print(Fore.YELLOW + f"Invoking {tool_name} with args: {args}" + Style.RESET_ALL)
             try:
                 result = tools_map[tool_name].invoke(args)
-                print(Fore.YELLOW + f"[Tool Executed] {result}" + Style.RESET_ALL + "\n")
                 tool_outputs.append(ToolMessage(tool_call_id=tool_call['id'], content=str(result)))
+                if tool_name == "internet_search":
+                    print(Fore.YELLOW + f"[Tool Executed] 'query': '{result['query']}', 'follow_up_questions': '{result['follow_up_questions']}', 'result': 'Too long can't show.....', 'response_time': {result['response_time']}" + Style.RESET_ALL + "\n")
+                    
+                elif tool_name == "web_scraper":
+                    result_urls = [item['url'] for item in result['results'] if 'url' in item]
+
+                    failed_urls = [item['url'] for item in result['failed_results'] if 'url' in item]
+                    
+                    print(Fore.YELLOW + f"[Tool Executed] 'results_url': '{result_urls}', 'failed_urls':'{failed_urls}', 'response_time': {result['response_time']}" + Style.RESET_ALL + "\n")
+                else:
+                    print(Fore.YELLOW + f"[Tool Executed] {result}" + Style.RESET_ALL + "\n")
             except Exception as e:
                 tool_outputs.append(
                     ToolMessage(tool_call_id=tool_call['id'], content=f"Error executing {tool_name}: {e}")
