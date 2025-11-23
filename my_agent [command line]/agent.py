@@ -27,38 +27,27 @@ init(autoreset=True)
 load_dotenv()
 
 ENV_PATH = ".env"
+gemini_key = os.getenv("GOOGLE_API_KEY")
+name = os.getenv("NAME")
 
-if "GOOGLE_API_KEY" not in os.environ:
-    gemini_key = input("Enter your Gemini API: ")
+if not gemini_key:
+    while True:
+        gemini_key = input("Enter your Gemini API: ").strip()
+        if gemini_key:
+            break
     with open(ENV_PATH, 'a') as f:
         f.write(f"GOOGLE_API_KEY={gemini_key}\n")
-        print(f"Gemini_Api_Key not found!!! Added GOOGLE_API_KEY={gemini_key} in .env")
-        
-if "NAME" not in os.environ:
-    name = input("Enter your Name: ")
+        print(f"Gemini_Api_Key not found!!! Added GOOGLE_API_KEY={gemini_key} in .env\n")     
+if not name:
+    while True:
+        name = input("Enter your Name: ").strip()
+        if name:
+            break
     with open(ENV_PATH, 'a') as f:
         f.write(f"NAME={name}\n")
-        print(f"NAME not found!!! Added NAME={name} in .env")
-    
-        
+        print(f"NAME not found!!! Added NAME={name} in .env\n")
 else:
-    gemini_key = os.getenv("GOOGLE_API_KEY")
-    name = os.getenv("NAME")
-    print(f"Gemini_Api_Key found!!! name = {name} gemini_key = {gemini_key}")
-
-if not gemini_key or not name:
-    if not gemini_key:
-        gemini_key = input("Enter your Gemini API: ")
-        with open(ENV_PATH, 'a') as f:
-            f.write(f"GOOGLE_API_KEY={gemini_key}\n")
-            print(f"Gemini_Api_Key not found!!! Added GOOGLE_API_KEY={gemini_key} in .env")
-            
-    if not name:
-        name = input("Enter your Name: ")
-        with open(ENV_PATH, 'a') as f:
-            f.write(f"NAME={name}\n")
-            print(f"NAME not found!!! Added NAME={name} in .env")
-
+    print(f"Gemini_Api_Key found!!! name = {name} gemini_key = {gemini_key}\n")
 
 # LLM
 llm = ChatGoogleGenerativeAI(
@@ -218,8 +207,7 @@ async def run_loop():
             markdown_text = result["messages"][-1].content
             md = Markdown(markdown_text)
             console.print(md, style="#2bbd65")
-
-                        
+                 
         except exceptions.InvalidArgument as e:
             print(Fore.RED + "Invalid input:", e)
 
@@ -239,6 +227,9 @@ async def run_loop():
         except exceptions.ServiceUnavailable as e:
             print(Fore.RED + "Service unavailable:", e)
 
+        except exceptions.BadRequest as e:
+            print(Fore.RED + "Invalid Api Key Provided:", str(e))
+            
         except Exception as e:
             print(Fore.RED + "Unknown error:", e)
 

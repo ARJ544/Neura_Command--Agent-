@@ -16,8 +16,11 @@ load_dotenv()
 
 ENV_PATH = ".env"
 
-if "TAVILY_API_KEY" not in os.environ:
-    had_provided = False
+tavily_key = os.getenv("TAVILY_API_KEY")
+name = os.getenv("NAME")
+
+if not tavily_key:
+    print()
     while True:
         choice = input(
             "Tavily is used for searching the web and scraping any URL.\n"
@@ -28,27 +31,25 @@ if "TAVILY_API_KEY" not in os.environ:
         if choice in ("Y", "N"):
             break
         else:
-            print("Please enter only Y or N.\n")
+            print("\nPlease enter only Y or N.\n")
 
     if choice == "Y":
-        tavily_key = input("Enter your Tavily API: ")
+        print()
+        while True:
+            tavily_key = input("Enter your Tavily API: ").strip()
+            if tavily_key:
+                print()
+                break
+        
         with open(ENV_PATH, 'a') as f:
             f.write(f"TAVILY_API_KEY={tavily_key}\n")
-            print(f"TAVILY_API_KEY not found!!! Added TAVILY_API_KEY={tavily_key} in .env")
-            had_provided = True
+            print(f"\nTAVILY_API_KEY not found!!! Added TAVILY_API_KEY={tavily_key} in .env\n")
     else:
-        print("Proceeding without Tavily API key.")
+        tavily_key = "PlaceHolder"
+        print("\nProceeding without Tavily API key.\n")
 
 else:
-    tavily_key = os.getenv("TAVILY_API_KEY")
-    name = os.getenv("NAME")
-    print(f"TAVILY_API_KEY found!!! name = {name} tavily_api_key = {tavily_key}")
-
-if (had_provided == True) and (not tavily_key):
-    tavily_key = input("Enter your Tavily API: ")
-    with open(ENV_PATH, 'a') as f:
-        f.write(f"TAVILY_API_KEY={tavily_key}\n")
-        print(f"TAVILY_API_KEY not found!!! Added TAVILY_API_KEY={tavily_key} in .env")
+    print(f"TAVILY_API_KEY found!!! name = {name} tavily_api_key = {tavily_key}\n")
 
 tavily_client = TavilyClient(api_key=tavily_key)
 
