@@ -26,50 +26,38 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 init(autoreset=True)
 load_dotenv()
 
-def ask_and_save():
-    name = input("Enter your name: ")
-    gemini_key = input("Enter your Gemini API: ")
-    tavily_key = input("Enter your Tavily API: ")
+ENV_PATH = ".env"
 
-    with open(env_path, "w") as f:
-        f.write(f"NAME={name}\n")
-        f.write(f"GOOGLE_API_KEY={gemini_key}\n")
-        f.write(f"TAVILY_API_KEY={tavily_key}\n")
-
-    return name, gemini_key, tavily_key
-def open_read_check_env(env_path):
-    with open(env_path, 'r') as f:
-        values = f.readlines()
-
-        if values == [] or len(values) < 3:
-            name, gemini_key, tavily_key = ask_and_save()
-            values = [f"NAME={name}\n", f"GOOGLE_API_KEY={gemini_key}\n", f"TAVILY_API_KEY={tavily_key}\n"]
-
-        name = values[0].strip().split("=")[1]
-        gemini_key = values[1].strip().split("=")[1]
-        tavily_key = values[2].strip().split("=")[1]
-
-    return name, gemini_key, tavily_key
- 
 if "GOOGLE_API_KEY" not in os.environ:
-    env_path = ".env"
-
-    if os.path.exists(env_path):
-        name, gemini_key, tavily_key = open_read_check_env(env_path)
-        print(f".env exists!!! name={name}, gemini_key={gemini_key}, tavily_key={tavily_key}")
-
-    else:
-        name, gemini_key, tavily_key = ask_and_save()
-        print(f"New .env file created successfully! With name = {name}, gemini_key = {gemini_key}, tavily_key = {tavily_key}")
+    gemini_key = input("Enter your Gemini API: ")
+    with open(ENV_PATH, 'a') as f:
+        f.write(f"GOOGLE_API_KEY={gemini_key}\n")
+        print(f"Gemini_Api_Key not found!!! Added GOOGLE_API_KEY={gemini_key} in .env")
+        
+if "NAME" not in os.environ:
+    name = input("Enter your Name: ")
+    with open(ENV_PATH, 'a') as f:
+        f.write(f"NAME={name}\n")
+        print(f"NAME not found!!! Added NAME={name} in .env")
+    
+        
 else:
     gemini_key = os.getenv("GOOGLE_API_KEY")
-    tavily_key = os.getenv("TAVILY_API_KEY")
-    name = os.environ.get("NAME")
-    print(f"Gemini_Api_Key found!!! name = {name} gemini_key = {gemini_key} tavily_key = {tavily_key}")
+    name = os.getenv("NAME")
+    print(f"Gemini_Api_Key found!!! name = {name} gemini_key = {gemini_key}")
 
-if not gemini_key or not tavily_key or not name:
-    name, gemini_key, tavily_key = open_read_check_env(env_path)
-    print(f".env exists!!! Variables wasn't Found!!!\n Created name={name}, gemini_key={gemini_key}, tavily_key={tavily_key}")
+if not gemini_key or not name:
+    if not gemini_key:
+        gemini_key = input("Enter your Gemini API: ")
+        with open(ENV_PATH, 'a') as f:
+            f.write(f"GOOGLE_API_KEY={gemini_key}\n")
+            print(f"Gemini_Api_Key not found!!! Added GOOGLE_API_KEY={gemini_key} in .env")
+            
+    if not name:
+        name = input("Enter your Name: ")
+        with open(ENV_PATH, 'a') as f:
+            f.write(f"NAME={name}\n")
+            print(f"NAME not found!!! Added NAME={name} in .env")
 
 
 # LLM
@@ -219,7 +207,7 @@ async def run_loop():
         markdown_text = ""
         try:
             with Progress(
-                SpinnerColumn(),
+                SpinnerColumn("arc"),
                 TextColumn("[progress.description]{task.description}"),
                 transient=True 
             ) as progress:
