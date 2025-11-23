@@ -247,7 +247,7 @@ async def run_loop():
                     while running:
                         progress.update(task, description=messages[i % len(messages)])
                         i += 1
-                        time.sleep(0.6)
+                        time.sleep(0.9)
 
                 updater_thread = threading.Thread(target=update_description)
                 updater_thread.start()
