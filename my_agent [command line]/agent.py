@@ -11,7 +11,7 @@ from utils import control_brightness_volume_tool as cbv
 from utils import create_rename_delete_folder_tool as crdf
 from utils import create_rename_delete_file_tool as crdfile
 from langgraph.graph import StateGraph, MessagesState, START, END
-import os, threading
+import os,sys
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from google.api_core import exceptions
@@ -22,7 +22,7 @@ from colorama import Fore, Style, init
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.progress import Progress, SpinnerColumn, TextColumn
-import time
+
 init(autoreset=True)
 load_dotenv()
 
@@ -212,84 +212,95 @@ Try one of the following Solution:
     ii) Restart the App
     iii) Change the model
 """
+default_msg = f"""
+{Fore.CYAN + Style.BRIGHT}I can help you manage and automate a wide range of tasks on your system, including:{Style.RESET_ALL}
 
+ {Fore.YELLOW}• Web Search:{Fore.WHITE} Quickly look up information from across the internet.
+ {Fore.YELLOW}• Web Scraping:{Fore.WHITE} Extract structured data from specific websites.
+ {Fore.YELLOW}• Application Control:{Fore.WHITE} Open, close, minimize, maximize, restore, and switch between apps.
+ {Fore.YELLOW}• System Volume Control:{Fore.WHITE} Increase, decrease, or mute your system volume.
+ {Fore.YELLOW}• System Brightness Control:{Fore.WHITE} Adjust your device’s brightness levels.
+ {Fore.YELLOW}• File & Folder Management:{Fore.WHITE} Create, rename, or delete files and directories.
+ {Fore.YELLOW}• User Preference Management:{Fore.WHITE} Update your personal preferences such as Name, Gemini_API_Key, or Tavily_API_Key.
+
+{Fore.CYAN}To update your name or API keys, simply tell the Agent to modify your user preferences.{Style.RESET_ALL}
+
+{Fore.MAGENTA}Shortcuts:{Style.RESET_ALL}
+ {Fore.GREEN}• (Ctrl + C){Fore.WHITE} → Exit the application
+ {Fore.GREEN}• (Ctrl + Shift + O){Fore.WHITE} → Start a new chat session
+"""
+
+console = Console()
 async def run_loop():
     os.system("cls" if os.name == "nt" else "clear")
-    print("\nNeura_Command is ready. Type your query below.\n")
-    console = Console()
+    print("\033c", end="")
+    print(default_msg)
     
+
     while True:
-        user_input = input("\n" + Fore.CYAN + r"You: " + Style.RESET_ALL)
-        print()
-
-        input_data = {"messages": [HumanMessage(content=user_input)]}
-        markdown_text = ""
-
         try:
+            user_input = input("\n" + Fore.CYAN + r"You: " + Style.RESET_ALL)
+
+            if not user_input.strip():
+                continue
+
+            print()
+
+            input_data = {"messages": [HumanMessage(content=user_input)]}
+
             with Progress(
                 SpinnerColumn("arc"),
                 TextColumn("[progress.description]{task.description}"),
-                transient=True   # hides after exit
+                transient=True
             ) as progress:
+                progress.add_task("Generating response...", start=True)
+                result = await app.ainvoke(input_data, config)
 
-                task = progress.add_task("Generating response...", start=False)
-
-                running = True
-
-                def update_description():
-                    messages = [
-                        "Analyzing your message...",
-                        "Thinking deeply...",
-                        "Generating response...",
-                        "Almost done..."
-                    ]
-                    i = 0
-                    while running:
-                        progress.update(task, description=messages[i % len(messages)])
-                        i += 1
-                        time.sleep(0.9)
-
-                updater_thread = threading.Thread(target=update_description)
-                updater_thread.start()
-
-                progress.start_task(task)
-                result = app.invoke(input_data, config)
-
-                running = False
-                updater_thread.join()
-
-            # Convert to Markdown
             markdown_text = result["messages"][-1].content
-            md = Markdown(markdown_text)
-            console.print(md, style="#2bbd65")
+            console.print(Markdown(markdown_text), style="#2bbd65")
 
-                 
-        except exceptions.InvalidArgument as e:
-            print(Fore.RED + "Invalid input:", e)
+        except KeyboardInterrupt:
+            print("\n Exiting....")
+            break
 
-        except exceptions.PermissionDenied as e:
-            print(Fore.RED + "Permission denied:", e)
-
-        except exceptions.ResourceExhausted as e:
-            print(Fore.RED + f"Rate limit exceeded:" + Style.RESET_ALL)
-            print(Fore.LIGHTMAGENTA_EX + solution + Style.RESET_ALL)
-
-        except exceptions.NotFound as e:
-            print(Fore.RED + "Model not found:", e)
-
+        except asyncio.CancelledError:
+            print("\n Exiting....")
+            break
+        
+        except EOFError:
+            print("\n Exiting....")
+            break
+        
         except exceptions.InternalServerError as e:
-            print(Fore.RED + "Server error:", e)
-
-        except exceptions.ServiceUnavailable as e:
-            print(Fore.RED + "Service unavailable:", e)
-
-        except exceptions.BadRequest as e:
-            print(Fore.RED + "Invalid Api Key Provided:", str(e))
-            clear_gemini_api(ENV_PATH)
+            print(Fore.RED + "Internal Server Error:", e)
+        
+        except exceptions.TooManyRequests as e:
+            print(Fore.RED + "Too many Requests Change Gemini Model: ", e)
+            print(Fore.MAGENTA + solution + Style.RESET_ALL)
             
+        
+        except exceptions.BadRequest as e:
+            print(Fore.RED + "Bad Request:", e)
+            if "api key not valid" in str(e).lower():
+                clear_gemini_api(ENV_PATH)
+            print(Fore.MAGENTA + solution + Style.RESET_ALL)
+
         except Exception as e:
             print(Fore.RED + "Unknown error:", e)
-            clear_gemini_api(ENV_PATH)
+            if "api key not valid" in str(e).lower():
+                clear_gemini_api(ENV_PATH)
+            print(Fore.MAGENTA + solution + Style.RESET_ALL)
 
-            
-asyncio.run(run_loop())
+
+if __name__ == "__main__":
+    try:
+        asyncio.run(run_loop())
+    except (KeyboardInterrupt, EOFError, asyncio.CancelledError):
+        print("\nExiting cleanly...\n")
+        sys.exit(0)
+
+    try:
+        asyncio.run(run_loop())
+    except (KeyboardInterrupt, EOFError, asyncio.CancelledError):
+        print("\nExiting cleanly...\n")
+        sys.exit(0)
