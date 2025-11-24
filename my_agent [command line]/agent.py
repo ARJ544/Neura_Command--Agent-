@@ -11,13 +11,13 @@ from utils import control_brightness_volume_tool as cbv
 from utils import create_rename_delete_folder_tool as crdf
 from utils import create_rename_delete_file_tool as crdfile
 from langgraph.graph import StateGraph, MessagesState, START, END
-import os,sys
+import os, sys, asyncio
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from google.api_core import exceptions
 from langchain_core.messages import HumanMessage,SystemMessage, ToolMessage, AIMessage
 from langgraph.checkpoint.memory import MemorySaver
-import asyncio
+from InquirerPy import inquirer 
 from colorama import Fore, Style, init
 from rich.console import Console
 from rich.markdown import Markdown
@@ -68,9 +68,21 @@ def clear_gemini_api(env_path):
 
     print(Fore.RED + "GOOGLE_API_KEY removed from .env successfully due to invalid API KEY! Restart App to enter valid api key.")
 
+llm_choice = inquirer.select(
+    message="Choose an LLM (Use Arrow keys) to select:",
+    choices=[
+    "gemini-2.0-flash-lite",
+    "gemini-2.0-flash",
+    "gemini-2.5-flash-lite",
+    "gemini-2.5-flash",
+    "gemini-2.5-pro"
+], 
+    qmark = "",
+    long_instruction="Choose fast 😁"
+).execute()
 # LLM
 llm = ChatGoogleGenerativeAI(
-    model="gemini-2.0-flash-lite",
+    model=llm_choice,
     temperature=0,
     max_tokens=None,
     timeout=None,
@@ -84,6 +96,7 @@ llmwithtools = llm.bind_tools(tools)
 # NODE
 system_msg = SystemMessage(content=
     "You are Neura_Command, an Agentic AI created by Abhinav Ranjan Jha. "
+    "Speak language in which user talks"
     "You can control the entire computer system through provided tools. "
     "USE internet_search to search the internet for recent information. "
     "USE web_scraper to know all about given link/url or extract/scrape information from it. All types of websites are supported "
