@@ -22,7 +22,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from dotenv import load_dotenv
-import os, sys, asyncio, keyboard, threading
+import os, sys, asyncio, keyboard, threading, time
 
 init(autoreset=True)
 load_dotenv()
@@ -250,12 +250,22 @@ def create_new_session(config):
         if keyboard.is_pressed('ctrl+shift+o'):
             print(Fore.YELLOW + "\nCtrl + Shift + O was pressed!" + Style.RESET_ALL)
             try:
-                app.update_state({"messages": [RemoveMessage(id=REMOVE_ALL_MESSAGES)]},config )
+                app.update_state(
+                    values={"messages": [RemoveMessage(id=REMOVE_ALL_MESSAGES)]},
+                    config= config
+                )
+
                 os.system("cls" if os.name == "nt" else "clear")
                 print("\033c", end="")
-                print("New Session Started")
+                print("New Session Started\n")
+                
+                print(Fore.CYAN + "You: " + Style.RESET_ALL)
+
             except Exception as e:
                 print(f"{e}")
+                print("\n" + Fore.CYAN + "You: " + Style.RESET_ALL)
+
+        time.sleep(0.05)
 
 async def run_loop():
     os.system("cls" if os.name == "nt" else "clear")
