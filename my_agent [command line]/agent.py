@@ -259,11 +259,11 @@ def create_new_session(config):
                 print("\033c", end="")
                 print("New Session Started\n")
                 
-                print(Fore.CYAN + "You: " + Style.RESET_ALL)
+                print(Fore.CYAN + "You: " + Style.RESET_ALL, end="")
 
             except Exception as e:
                 print(f"{e}")
-                print("\n" + Fore.CYAN + "You: " + Style.RESET_ALL)
+                print("\n" + Fore.CYAN + "You: " + Style.RESET_ALL, end="")
 
         time.sleep(0.05)
 
