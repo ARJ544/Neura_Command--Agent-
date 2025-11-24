@@ -11,17 +11,18 @@ from utils import control_brightness_volume_tool as cbv
 from utils import create_rename_delete_folder_tool as crdf
 from utils import create_rename_delete_file_tool as crdfile
 from langgraph.graph import StateGraph, MessagesState, START, END
-import os, sys, asyncio
-from dotenv import load_dotenv
+from langgraph.graph.message import REMOVE_ALL_MESSAGES
 from langchain_google_genai import ChatGoogleGenerativeAI
 from google.api_core import exceptions
-from langchain_core.messages import HumanMessage,SystemMessage, ToolMessage, AIMessage
+from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage, AIMessage, RemoveMessage
 from langgraph.checkpoint.memory import MemorySaver
 from InquirerPy import inquirer 
 from colorama import Fore, Style, init
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.progress import Progress, SpinnerColumn, TextColumn
+from dotenv import load_dotenv
+import os, sys, asyncio, keyboard, threading
 
 init(autoreset=True)
 load_dotenv()
@@ -96,8 +97,9 @@ llmwithtools = llm.bind_tools(tools)
 # NODE
 system_msg = SystemMessage(content=
     "You are Neura_Command, an Agentic AI created by Abhinav Ranjan Jha. "
-    "Speak language in which user talks"
-    "You can control the entire computer system through provided tools. "
+    "Speak the language in which the user talks/want to talk. "
+    "You can control the entire computer system through provided tools. Also you can do general talks. "
+    "You can also solve any type of question. "
     "USE internet_search to search the internet for recent information. "
     "USE web_scraper to know all about given link/url or extract/scrape information from it. All types of websites are supported "
     "If the user provides an invalid Windows application name that you don't know, treat it as valid and proceed. "
@@ -243,12 +245,24 @@ default_msg = f"""
  {Fore.GREEN}• (Ctrl + Shift + O){Fore.WHITE} → Start a new chat session
 """
 
-console = Console()
+def create_new_session(config):
+    while True:
+        if keyboard.is_pressed('ctrl+shift+o'):
+            print(Fore.YELLOW + "\nCtrl + Shift + O was pressed!" + Style.RESET_ALL)
+            try:
+                app.update_state({"messages": [RemoveMessage(id=REMOVE_ALL_MESSAGES)]},config )
+                os.system("cls" if os.name == "nt" else "clear")
+                print("\033c", end="")
+                print("New Session Started")
+            except Exception as e:
+                print(f"{e}")
+
 async def run_loop():
     os.system("cls" if os.name == "nt" else "clear")
     print("\033c", end="")
     print(default_msg)
-    
+    console = Console()
+    threading.Thread(target=create_new_session,args=(config,), daemon=True).start()
 
     while True:
         try:
@@ -290,8 +304,7 @@ async def run_loop():
         except exceptions.TooManyRequests as e:
             print(Fore.RED + "Too many Requests Change Gemini Model: ", e)
             print(Fore.MAGENTA + solution + Style.RESET_ALL)
-            
-        
+                   
         except exceptions.BadRequest as e:
             print(Fore.RED + "Bad Request:", e)
             if "api key not valid" in str(e).lower():
@@ -309,7 +322,7 @@ if __name__ == "__main__":
     try:
         asyncio.run(run_loop())
     except (KeyboardInterrupt, EOFError, asyncio.CancelledError):
-        print("\nExiting cleanly...\n")
+        print("\nPlease wait.......... Exiting cleanly...\n")
         sys.exit(0)
 
     try:
