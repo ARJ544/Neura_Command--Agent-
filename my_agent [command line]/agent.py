@@ -13,9 +13,13 @@ from utils import create_rename_delete_file_tool as crdfile
 from langgraph.graph import StateGraph, MessagesState, START, END
 from langchain_google_genai import ChatGoogleGenerativeAI
 from google.api_core import exceptions
-from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage, AIMessage, RemoveMessage
+from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage, AIMessage
 from langgraph.checkpoint.memory import MemorySaver
-from InquirerPy import inquirer 
+from InquirerPy import inquirer
+from prompt_toolkit import PromptSession
+from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.keys import Keys
+from prompt_toolkit.styles import Style as PTStyle
 from colorama import Fore, Style, init
 from rich.console import Console
 from rich.markdown import Markdown
@@ -240,19 +244,35 @@ default_msg = f"""
 {Fore.CYAN}To update your name or API keys, simply tell the Agent to modify your user preferences.{Style.RESET_ALL}
 
 {Fore.MAGENTA}Shortcuts:{Style.RESET_ALL}
+ {Fore.GREEN}• (Enter){Fore.WHITE} → New Line
  {Fore.GREEN}• (Ctrl + C){Fore.WHITE} → Exit the application
- {Fore.GREEN}• (Ctrl + Shift + O){Fore.WHITE} → Start a new chat session
+ {Fore.GREEN}• (Ctrl + D){Fore.WHITE} → Submit Query
 """
 
 async def run_loop():
     os.system("cls" if os.name == "nt" else "clear")
     print("\033c", end="")
     print(default_msg)
+    
     console = Console()
+    kb = KeyBindings()
+    
+    @kb.add(Keys.Enter)
+    def _(event):
+        event.current_buffer.insert_text('\n')
+    
+    @kb.add(Keys.ControlD)
+    def _(event):
+        event.current_buffer.validate_and_handle()
+    session = PromptSession(multiline=True, key_bindings=kb,)
+    
+    style = PTStyle.from_dict({
+    'prompt': 'ansicyan bold',})
+
 
     while True:
         try:
-            user_input = input("\n" + Fore.CYAN + r"You: " + Style.RESET_ALL)
+            user_input = await session.prompt_async("\n" + [('class:prompt', r"You: ")], style=style)
 
             if not user_input.strip():
                 continue
@@ -273,15 +293,15 @@ async def run_loop():
             console.print(Markdown(markdown_text), style="#2bbd65")
 
         except KeyboardInterrupt:
-            print("\n Exiting....")
+            print("\nExiting.... Wait...")
             break
 
         except asyncio.CancelledError:
-            print("\n Exiting....")
+            print("\nExiting.... Wait...")
             break
         
         except EOFError:
-            print("\n Exiting....")
+            print("\nExiting.... Wait...")
             break
         
         except exceptions.InternalServerError as e:
@@ -303,16 +323,9 @@ async def run_loop():
                 clear_gemini_api(ENV_PATH)
             print(Fore.MAGENTA + solution + Style.RESET_ALL)
 
-
 if __name__ == "__main__":
     try:
         asyncio.run(run_loop())
     except (KeyboardInterrupt, EOFError, asyncio.CancelledError):
         print("\nPlease wait.......... Exiting cleanly...\n")
-        sys.exit(0)
-
-    try:
-        asyncio.run(run_loop())
-    except (KeyboardInterrupt, EOFError, asyncio.CancelledError):
-        print("\nExiting cleanly...\n")
         sys.exit(0)
