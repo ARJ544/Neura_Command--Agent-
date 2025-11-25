@@ -21,4 +21,6 @@ my_agent [command line]/                          # 📁 Root Project Directory 
 ├─ config.py                       # 🛠️ Environment setup, LLM initialization, tool binding, system prompt
 │
 └─ main.py                         # 🚀 Application entry point (used to build .exe)
+│
+└─ agent.py                        # Only for Testing the agent. Will be deleted Later 🛑🛑
 ```
