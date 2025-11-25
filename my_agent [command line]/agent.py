@@ -11,7 +11,6 @@ from utils import control_brightness_volume_tool as cbv
 from utils import create_rename_delete_folder_tool as crdf
 from utils import create_rename_delete_file_tool as crdfile
 from langgraph.graph import StateGraph, MessagesState, START, END
-from langgraph.graph.message import REMOVE_ALL_MESSAGES
 from langchain_google_genai import ChatGoogleGenerativeAI
 from google.api_core import exceptions
 from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage, AIMessage, RemoveMessage
@@ -22,7 +21,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from dotenv import load_dotenv
-import os, sys, asyncio, keyboard, threading, time
+import os, sys, asyncio
 
 init(autoreset=True)
 load_dotenv()
@@ -245,34 +244,11 @@ default_msg = f"""
  {Fore.GREEN}• (Ctrl + Shift + O){Fore.WHITE} → Start a new chat session
 """
 
-def create_new_session(config):
-    while True:
-        if keyboard.is_pressed('ctrl+shift+o'):
-            print(Fore.YELLOW + "\nCtrl + Shift + O was pressed!" + Style.RESET_ALL)
-            try:
-                app.update_state(
-                    values={"messages": [RemoveMessage(id=REMOVE_ALL_MESSAGES)]},
-                    config= config
-                )
-
-                os.system("cls" if os.name == "nt" else "clear")
-                print("\033c", end="")
-                print("New Session Started\n")
-                
-                print(Fore.CYAN + "You: " + Style.RESET_ALL, end="")
-
-            except Exception as e:
-                print(f"{e}")
-                print("\n" + Fore.CYAN + "You: " + Style.RESET_ALL, end="")
-
-        time.sleep(0.05)
-
 async def run_loop():
     os.system("cls" if os.name == "nt" else "clear")
     print("\033c", end="")
     print(default_msg)
     console = Console()
-    threading.Thread(target=create_new_session,args=(config,), daemon=True).start()
 
     while True:
         try:
