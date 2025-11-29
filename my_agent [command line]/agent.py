@@ -10,6 +10,7 @@ from utils import open_close_min_max_res_apps_tool as ocmmr
 from utils import control_brightness_volume_tool as cbv
 from utils import create_rename_delete_folder_tool as crdf
 from utils import create_rename_delete_file_tool as crdfile
+from utils import move_file_folder as mff
 from langgraph.graph import StateGraph, MessagesState, START, END
 from langchain_google_genai import ChatGoogleGenerativeAI
 from google.api_core import exceptions
@@ -93,7 +94,7 @@ llm = ChatGoogleGenerativeAI(
     max_retries=0,
     google_api_key=gemini_key,
 )
-tools = [research_tools.internet_search, research_tools.web_scraper, ocmmr.open_app, ocmmr.close_app, ocmmr.minimize_app, ocmmr.maximize_app, ocmmr.restore_app, ocmmr.switch_btwn_apps, cbv.set_volume, cbv.set_brightness, crdf.create_folder, crdf.rename_folder, crdf.delete_folder, crdfile.create_add_content_file, crdfile.rename_file, crdfile.delete_file, cup.change_user_preferences]
+tools = [research_tools.internet_search, research_tools.web_scraper, ocmmr.open_app, ocmmr.close_app, ocmmr.minimize_app, ocmmr.maximize_app, ocmmr.restore_app, ocmmr.switch_btwn_apps, cbv.set_volume, cbv.set_brightness, crdf.create_folder, crdf.rename_folder, crdf.delete_folder, crdfile.create_add_content_file, crdfile.rename_file, crdfile.delete_file, mff.move_file_folder, cup.change_user_preferences]
 tools_by_name = {tool.name: tool for tool in tools}
 llmwithtools = llm.bind_tools(tools)
 
@@ -237,8 +238,8 @@ default_msg = f"""
  {Fore.YELLOW}• Web Scraping:{Fore.WHITE} Extract structured data from specific websites.
  {Fore.YELLOW}• Application Control:{Fore.WHITE} Open, close, minimize, maximize, restore, and switch between apps.
  {Fore.YELLOW}• System Volume Control:{Fore.WHITE} Increase, decrease, or mute your system volume.
- {Fore.YELLOW}• System Brightness Control:{Fore.WHITE} Adjust your device’s brightness levels.
- {Fore.YELLOW}• File & Folder Management:{Fore.WHITE} Create, rename, or delete files and directories.
+ {Fore.YELLOW}• System Brightness Control:{Fore.WHITE} Adjust your device's brightness levels.
+ {Fore.YELLOW}• File & Folder Management:{Fore.WHITE} Create, rename, Move or delete files and directories.
  {Fore.YELLOW}• User Preference Management:{Fore.WHITE} Update your personal preferences such as Name, Gemini_API_Key, or Tavily_API_Key.
 
 {Fore.CYAN}To update your name or API keys, simply tell the Agent to modify your user preferences.{Style.RESET_ALL}

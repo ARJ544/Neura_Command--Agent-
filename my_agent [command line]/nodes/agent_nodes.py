@@ -4,10 +4,13 @@ from utils import open_close_min_max_res_apps_tool as ocmmr
 from utils import control_brightness_volume_tool as cbv
 from utils import create_rename_delete_folder_tool as crdf
 from utils import create_rename_delete_file_tool as crdfile
+from utils import move_file_folder as mff
 from langgraph.graph import MessagesState
 from langchain_core.messages import SystemMessage, ToolMessage, AIMessage
-from colorama import Fore, Style
+from colorama import Fore, Style, init
 from config import llmwithtools, name
+
+init(autoreset=True)
 
 system_msg = SystemMessage(content=
     "You are Neura_Command, an Agentic AI created by Abhinav Ranjan Jha. "
@@ -69,6 +72,7 @@ def execute_tool_calls_node(state: MessagesState):
         "create_add_content_file": crdfile.create_add_content_file,
         "rename_file": crdfile.rename_file,
         "delete_file": crdfile.delete_file,
+        "move_file_folder": mff.move_file_folder,
         "change_user_preferences": cup.change_user_preferences,
         
     }
