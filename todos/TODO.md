@@ -9,7 +9,7 @@
 ## 2. File & Folder Operations
 - [x] Create/rename/delete files
 - [x] Create/rename/delete folders
-- [ ] Move/copy files & folders
+- [x] Move/copy files & folders
 - [ ] Extract zip/rar archives
 - [ ] Search for files
 - [ ] Read/write documents (txt, md, docx)
