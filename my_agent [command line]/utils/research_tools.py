@@ -12,6 +12,16 @@ from langchain_core.tools import tool
 from tavily import TavilyClient
 from typing import Literal
 
+welcome_msg = """\033[38;5;208m
+
+█░█░█ █▀▀ █░░ █▀▀ █▀█ █▀▄▀█ █▀▀   ▀█▀ █▀█   █▄░█ █▀▀ █░█ █▀█ ▄▀█   █▀▀ █▀█ █▀▄▀█ █▀▄▀█ ▄▀█ █▄░█ █▀▄
+▀▄▀▄▀ ██▄ █▄▄ █▄▄ █▄█ █░▀░█ ██▄   ░█░ █▄█   █░▀█ ██▄ █▄█ █▀▄ █▀█   █▄▄ █▄█ █░▀░█ █░▀░█ █▀█ █░▀█ █▄▀
+\033[0m
+"""
+os.system("cls" if os.name == "nt" else "clear")
+print("\033c", end="")
+print(welcome_msg)
+
 load_dotenv()
 
 ENV_PATH = ".env"
