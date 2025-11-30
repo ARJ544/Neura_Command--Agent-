@@ -17,7 +17,6 @@ google-ai-generativelanguage==0.9.0
 google-api-core==2.28.1
 google-auth==2.43.0
 googleapis-common-protos==1.72.0
-greenlet==3.2.4
 grpcio==1.76.0
 grpcio-status==1.76.0
 h11==0.16.0
@@ -52,7 +51,6 @@ packaging==25.0
 parso==0.8.5
 pfzy==0.3.4
 platformdirs==4.5.0
-playwright==1.56.0
 prompt_toolkit==3.0.52
 proto-plus==1.26.1
 protobuf==6.33.1
@@ -64,7 +62,6 @@ PyAutoGUI==0.9.54
 pycaw==20251023
 pydantic==2.12.4
 pydantic_core==2.41.5
-pyee==13.0.0
 PyGetWindow==0.0.9
 Pygments==2.19.2
 PyMsgBox==2.0.1
