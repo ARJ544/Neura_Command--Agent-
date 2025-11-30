@@ -14,8 +14,7 @@
 - [x] Read documents (txt, md, etc....)
 
 ## 3. Web Automation
-- [ ] Open URL
-- [ ] Click links/buttons
+- [x] Open URL
 
 ## 4. Screen Understanding
 - [ ] OCR: Read text from screen
