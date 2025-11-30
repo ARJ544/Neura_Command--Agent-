@@ -6,6 +6,7 @@ from utils import control_brightness_volume_tool as cbv
 from utils import create_rename_delete_folder_tool as crdf
 from utils import create_rename_delete_file_tool as crdfile
 from utils import move_file_folder as mff
+from utils import create_or_extract_zip_tool as cez
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from InquirerPy import inquirer
@@ -57,6 +58,6 @@ llm = ChatGoogleGenerativeAI(
     max_retries=0,
     google_api_key=gemini_key,
 )
-tools = [research_tools.internet_search, research_tools.web_scraper, ocmmr.open_app, ocmmr.close_app, ocmmr.minimize_app, ocmmr.maximize_app, ocmmr.restore_app, ocmmr.switch_btwn_apps, cbv.set_volume, cbv.set_brightness, crdf.create_folder, crdf.rename_folder, crdf.delete_folder, crdfile.create_add_content_file, crdfile.rename_file, crdfile.delete_file, mff.move_file_folder, cup.change_user_preferences]
+tools = [research_tools.internet_search, research_tools.web_scraper, ocmmr.open_app, ocmmr.close_app, ocmmr.minimize_app, ocmmr.maximize_app, ocmmr.restore_app, ocmmr.switch_btwn_apps, cbv.set_volume, cbv.set_brightness, crdf.create_folder, crdf.rename_folder, crdf.delete_folder, crdfile.create_add_content_file, crdfile.rename_file, crdfile.delete_file, mff.move_file_folder, cez.create_zipfile, cez.extract_zipfile, cup.change_user_preferences]
 tools_by_name = {tool.name: tool for tool in tools}
 llmwithtools = llm.bind_tools(tools)

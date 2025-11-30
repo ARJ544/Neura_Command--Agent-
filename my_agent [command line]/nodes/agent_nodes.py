@@ -5,6 +5,7 @@ from utils import control_brightness_volume_tool as cbv
 from utils import create_rename_delete_folder_tool as crdf
 from utils import create_rename_delete_file_tool as crdfile
 from utils import move_file_folder as mff
+from utils import create_or_extract_zip_tool as cez
 from langgraph.graph import MessagesState
 from langchain_core.messages import SystemMessage, ToolMessage, AIMessage
 from colorama import Fore, Style, init
@@ -73,6 +74,8 @@ def execute_tool_calls_node(state: MessagesState):
         "rename_file": crdfile.rename_file,
         "delete_file": crdfile.delete_file,
         "move_file_folder": mff.move_file_folder,
+        "create_zipfile": cez.create_zipfile,
+        "extract_zipfile": cez.extract_zipfile,
         "change_user_preferences": cup.change_user_preferences,
         
     }
