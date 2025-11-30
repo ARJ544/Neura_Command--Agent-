@@ -45,10 +45,6 @@
 ### 2.4 Extract ZIP/RAR
 - shutil
 
-### 2.5 Search for files
-- os
-- glob
-- pathlib
 
 ### 2.6 Read/write txt, md, docx
 - python-docx
