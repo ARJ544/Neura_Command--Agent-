@@ -43,8 +43,7 @@
 - pathlib
 
 ### 2.4 Extract ZIP/RAR
-- zipfile
-- rarfile
+- shutil
 
 ### 2.5 Search for files
 - os
