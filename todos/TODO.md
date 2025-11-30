@@ -11,7 +11,7 @@
 - [x] Create/rename/delete folders
 - [x] Move/copy files & folders
 - [x] Extract and create zip archives
-- [x] Read documents (txt, md, docx, etc....)
+- [x] Read documents (txt, md, etc....)
 
 ## 3. Web Automation
 - [ ] Open URL

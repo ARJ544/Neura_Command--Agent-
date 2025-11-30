@@ -46,14 +46,10 @@
 - shutil
 
 
-### 2.6 Read/write txt, md, docx
+### 2.6 Read txt, md, etc...
 - python-docx
 - Built-in file I/O
 - pypandoc (for MD)
-
-### 2.7 Extract text from PDF
-- PyPDF2 or pypdf
-- pdfplumber
 
 ---
 
