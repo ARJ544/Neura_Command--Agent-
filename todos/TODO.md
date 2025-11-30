@@ -11,7 +11,6 @@
 - [x] Create/rename/delete folders
 - [x] Move/copy files & folders
 - [x] Extract and create zip archives
-- [ ] Search for files
 - [ ] Read/write documents (txt, md, docx)
 - [ ] Extract text from PDF
 
