@@ -77,6 +77,7 @@ default_msg = f"""
  {Fore.YELLOW}• System Volume Control:{Fore.WHITE} Increase, decrease, or mute your system volume.
  {Fore.YELLOW}• System Brightness Control:{Fore.WHITE} Adjust your device's brightness levels.
  {Fore.YELLOW}• File & Folder Management:{Fore.WHITE} Create, rename, Move or delete files and directories.
+ {Fore.YELLOW}• Read file content:{Fore.WHITE} Read the file's text/content.
  {Fore.YELLOW}• Extract & Create ZIP:{Fore.WHITE} Create and extract zip files.
  {Fore.YELLOW}• User Preference Management:{Fore.WHITE} Update your personal preferences such as Name, Gemini_API_Key, or Tavily_API_Key.
 
