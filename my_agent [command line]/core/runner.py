@@ -79,6 +79,7 @@ default_msg = f"""
  {Fore.YELLOW}• File & Folder Management:{Fore.WHITE} Create, rename, Move or delete files and directories.
  {Fore.YELLOW}• Read file content:{Fore.WHITE} Read the file's text/content.
  {Fore.YELLOW}• Extract & Create ZIP:{Fore.WHITE} Create and extract zip files.
+ {Fore.YELLOW}• Open url or query:{Fore.WHITE} Opens Url or query in Default Browser.
  {Fore.YELLOW}• User Preference Management:{Fore.WHITE} Update your personal preferences such as Name, Gemini_API_Key, or Tavily_API_Key.
 
 {Fore.CYAN}To update your name or API keys, simply tell the Agent to modify your user preferences.{Style.RESET_ALL}

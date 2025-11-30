@@ -7,6 +7,7 @@ from utils import create_rename_delete_file_tool as crdfile
 from utils import move_file_folder as mff
 from utils import create_or_extract_zip_tool as cez
 from utils import read_file_tool as rft
+from utils import open_url_query_in_browser_tool as ouqb
 from langgraph.graph import MessagesState
 from langchain_core.messages import SystemMessage, ToolMessage, AIMessage
 from colorama import Fore, Style, init
@@ -76,6 +77,7 @@ def execute_tool_calls_node(state: MessagesState):
         "create_zipfile": cez.create_zipfile,
         "extract_zipfile": cez.extract_zipfile,
         "read_file": rft.read_file,
+        "open_url_or_query": ouqb.open_url_or_query,
         "change_user_preferences": cup.change_user_preferences,
         
     }
