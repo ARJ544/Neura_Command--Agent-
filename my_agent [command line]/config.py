@@ -9,6 +9,7 @@ from utils import move_file_folder as mff
 from utils import create_or_extract_zip_tool as cez
 from utils import read_file_tool as rft
 from utils import open_url_query_in_browser_tool as ouqb
+from utils import read_screen_text_tool as rst
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from InquirerPy import inquirer
@@ -60,6 +61,6 @@ llm = ChatGoogleGenerativeAI(
     max_retries=0,
     google_api_key=gemini_key,
 )
-tools = [research_tools.internet_search, research_tools.web_scraper, ocmmr.open_app, ocmmr.close_app, ocmmr.minimize_app, ocmmr.maximize_app, ocmmr.restore_app, ocmmr.switch_btwn_apps, cbv.set_volume, cbv.set_brightness, crdf.create_folder, crdf.rename_folder, crdf.delete_folder, crdfile.create_add_content_file, crdfile.rename_file, crdfile.delete_file, mff.move_file_folder, cez.create_zipfile, cez.extract_zipfile, rft.read_file, ouqb.open_url_or_query, cup.change_user_preferences]
+tools = [research_tools.internet_search, research_tools.web_scraper, ocmmr.open_app, ocmmr.close_app, ocmmr.minimize_app, ocmmr.maximize_app, ocmmr.restore_app, ocmmr.switch_btwn_apps, cbv.set_volume, cbv.set_brightness, crdf.create_folder, crdf.rename_folder, crdf.delete_folder, crdfile.create_add_content_file, crdfile.rename_file, crdfile.delete_file, mff.move_file_folder, cez.create_zipfile, cez.extract_zipfile, rft.read_file, ouqb.open_url_or_query, rst.read_screen_text, cup.change_user_preferences]
 tools_by_name = {tool.name: tool for tool in tools}
 llmwithtools = llm.bind_tools(tools)

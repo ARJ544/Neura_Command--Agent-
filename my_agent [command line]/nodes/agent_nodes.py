@@ -8,6 +8,7 @@ from utils import move_file_folder as mff
 from utils import create_or_extract_zip_tool as cez
 from utils import read_file_tool as rft
 from utils import open_url_query_in_browser_tool as ouqb
+from utils import read_screen_text_tool as rst
 from langgraph.graph import MessagesState
 from langchain_core.messages import SystemMessage, ToolMessage, AIMessage
 from colorama import Fore, Style, init
@@ -54,8 +55,6 @@ def execute_tool_calls_node(state: MessagesState):
     last_message = state["messages"][-1]
     tool_outputs = []
 
-
-    # Map your tool names to the actual callable functions
     tools_map = {
         "internet_search": research_tools.internet_search,
         "web_scraper": research_tools.web_scraper,
@@ -78,6 +77,7 @@ def execute_tool_calls_node(state: MessagesState):
         "extract_zipfile": cez.extract_zipfile,
         "read_file": rft.read_file,
         "open_url_or_query": ouqb.open_url_or_query,
+        "read_screen_text": rst.read_screen_text,
         "change_user_preferences": cup.change_user_preferences,
         
     }
@@ -100,6 +100,9 @@ def execute_tool_calls_node(state: MessagesState):
                     failed_urls = [item['url'] for item in result['failed_results'] if 'url' in item]
                     
                     print(Fore.YELLOW + f"[Tool Executed] 'results_url': '{result_urls}', 'failed_urls':'{failed_urls}', 'response_time': {result['response_time']}" + Style.RESET_ALL + "\n")
+                    
+                elif tool_name == "read_screen_text":
+                    print(Fore.YELLOW + "[Tool Executed] result: Too long can't show..." + Style.RESET_ALL + "\n")
                 else:
                     print(Fore.YELLOW + f"[Tool Executed] {result}" + Style.RESET_ALL + "\n")
             except Exception as e:
