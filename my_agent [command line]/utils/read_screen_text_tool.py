@@ -22,7 +22,6 @@ if not ocr_apikey:
         f.write(f"OCR_API_KEY={""}\n")
         print(f"OCR_API_KEY not found!!! Added OCR_API_KEY in .env\n")
 
-
 OCR_LANGUAGES = {
     "English": "eng",
     "Arabic": "ara",
@@ -92,7 +91,7 @@ def read_screen_text(which_screen: int, language: SupportedLanguage = "English")
             Essentially, the value represents either the screen index or the number of Alt+Tab presses required.
 
     
-        language (str): Language of the text to extract. 
+        language (str): Language of the text to extract. Ask before invoking.
             Must be one of the supported languages. Default is "English".
             options: [
                 "English", "Arabic", "Bulgarian", "Chinese (Simplified)", "Chinese (Traditional)",
