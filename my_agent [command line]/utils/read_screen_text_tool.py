@@ -61,17 +61,37 @@ SupportedLanguage = Literal[
 ]
 
 @tool
-def read_screen_text(language: SupportedLanguage = "English"):
+def read_screen_text(which_screen: int, language: SupportedLanguage = "English"):
     """
-    Captures a screenshot of the currently active window (excluding the agent window)
-    and extracts text using OCR. Temporarily switches windows using Alt+Tab to
-    access the target screen.
+    Reads text from a window on the user's computer using OCR.
 
-    Notes:
-    - Designed for automation tasks where screen content needs to be read.
-    - Returns the extracted text as a string.
+    WHEN THE AGENT SHOULD CALL THIS TOOL:
+        - Call this tool whenever the user asks to "read", "check", "see",
+          "look at", "analyze", or "find the text" from their screen.
+        - Call this tool when the user mentions that an error message,
+          code snippet, popup, warning, or any text is visible on their screen.
+        - If the user says things like:
+              "There is an error on my screen"
+              "Read the text on my window"
+              "What does my screen say?"
+              "Check what's displayed"
+              "Look at the message I see"
+          → The agent MUST call this tool automatically.
+
+    WHAT THE TOOL DOES:
+        - Optionally switches to another window using Alt+Tab.
+        - Captures a screenshot.
+        - Extracts text from it.
+        - Returns the extracted text.
 
     Args:
+        which_screen (int): Specifies which screen to capture in the screenshot. Ask before invoking.
+            - If 1, captures the current screen (Agent).  
+            - If 2, simulates pressing Alt+Tab once to move to the next screen before capturing.  
+            - If 3, simulates pressing Alt+Tab twice to reach the screen after next, and so on.  
+            Essentially, the value represents either the screen index or the number of Alt+Tab presses required.
+
+    
         language (str): Language of the text to extract. 
             Must be one of the supported languages. Default is "English".
             options: [
@@ -87,22 +107,28 @@ def read_screen_text(language: SupportedLanguage = "English"):
         an exception occurs.
     """
     try:
-        # Get OCR code from language
+        if which_screen < 1:
+            return "which_screen must be >= 1"
+        
         ocr_language_code = OCR_LANGUAGES[language]
+        
+        if which_screen > 1:
+            pyautogui.keyDown('alt')
+            for _ in range(which_screen - 1):
+                pyautogui.press('tab')
+            pyautogui.keyUp('alt')
 
-        pyautogui.keyDown('alt')
-        pyautogui.press('tab')
-        pyautogui.keyUp('alt')
 
-        time.sleep(0.8)
+        time.sleep(0.7)
         
         file_name = f"screenshot_{uuid.uuid4()}.png"
         screenshot = ImageGrab.grab()
         screenshot.save(file_name)
         
-        pyautogui.keyDown('alt')
-        pyautogui.press('tab')
-        pyautogui.keyUp('alt')
+        if not which_screen == 1:
+            pyautogui.keyDown('alt')
+            pyautogui.press('tab')
+            pyautogui.keyUp('alt')
 
         
         api_url = "https://api.ocr.space/parse/image"
