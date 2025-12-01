@@ -17,27 +17,18 @@
 - [x] Open URL
 
 ## 4. Screen Understanding
-- [ ] OCR: Read text from screen
-- [ ] Extract region (x1,y1 → x2,y2)
-- [ ] Detect UI elements
-- [ ] Detect buttons/icons by image
-- [ ] Identify pop-ups & errors
+- [x] OCR: Read text from screen
 
 ## 5. Terminal Control
 - [ ] Execute commands
 - [ ] Install packages
-- [ ] Git operations (add/commit/push/pull)
+<!-- - [ ] Git operations (add/commit/push/pull) -->
 - [ ] Run scripts/commands in terminal
-- [ ] Kill processes
-- [ ] Monitor CPU/RAM
 
-## 6. Application-Specific Workflows
-### Browser
-- [ ] Open/close/switch tabs
 
-## 7. Developer Tools Integration
+<!-- ## 7. Developer Tools Integration
 - [ ] Auto-generate boilerplate code
 - [ ] Debugging assistance
 - [ ] Auto-fix compile errors
 - [ ] Run tests and interpret results
-- [ ] Suggest optimizations
+- [ ] Suggest optimizations -->
