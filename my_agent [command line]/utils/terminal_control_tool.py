@@ -34,7 +34,7 @@ def write_command_in_terminal(where_to_write: Literal["Powershell", "Command Pro
         pyautogui.write(where_to_write)
         time.sleep(0.2)
         pyautogui.press("enter")
-        time.sleep(1)
+        time.sleep(2)
         pyautogui.write(what_to_write, 0.1)
         
         return f"I had opened {where_to_write} and wrote {what_to_write}. User please press enter to execute. Also tell user what this command can do."
