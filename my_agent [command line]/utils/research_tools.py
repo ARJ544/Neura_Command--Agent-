@@ -127,10 +127,10 @@ def web_scraper(urls: list[str]):
     - The information is already provided in the conversation.
 
     Args:
-    - urls (list[str]): One or more URLs to scrape.
+        urls (list[str]): One or more URLs to scrape.
 
-    RETURNS:
-    - Detailed extracted content from each provided URL.
+    Returns:
+        Detailed extracted content from each provided URL.
     """
     if isinstance(urls, str):
         urls = [urls]
