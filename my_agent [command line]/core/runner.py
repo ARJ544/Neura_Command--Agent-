@@ -81,6 +81,7 @@ default_msg = f"""
  {Fore.YELLOW}• Extract & Create ZIP:{Fore.WHITE} Create and extract zip files.
  {Fore.YELLOW}• Open url or query:{Fore.WHITE} Opens Url or query in Default Browser.
  {Fore.YELLOW}• Get text from the Screen:{Fore.WHITE} Performs Alt+Tab and then Get text from the screen for any use case.
+ {Fore.YELLOW}• Write Commands:{Fore.WHITE} Opens Terminal and write commands.
  {Fore.YELLOW}• User Preference Management:{Fore.WHITE} Update your personal preferences such as Name, Gemini_API_Key, or Tavily_API_Key.
 
 {Fore.CYAN}To update your name or API keys, simply tell the Agent to modify your user preferences.{Style.RESET_ALL}

@@ -9,6 +9,7 @@ from utils import create_or_extract_zip_tool as cez
 from utils import read_file_tool as rft
 from utils import open_url_query_in_browser_tool as ouqb
 from utils import read_screen_text_tool as rst
+from utils import terminal_control_tool as tst
 from langgraph.graph import MessagesState
 from langchain_core.messages import SystemMessage, ToolMessage, AIMessage
 from colorama import Fore, Style, init
@@ -78,6 +79,7 @@ def execute_tool_calls_node(state: MessagesState):
         "read_file": rft.read_file,
         "open_url_or_query": ouqb.open_url_or_query,
         "read_screen_text": rst.read_screen_text,
+        "write_command_in_terminal": tst.write_command_in_terminal,
         "change_user_preferences": cup.change_user_preferences,
         
     }
