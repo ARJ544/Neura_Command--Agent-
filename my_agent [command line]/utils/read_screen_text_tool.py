@@ -128,7 +128,12 @@ def read_screen_text(which_screen: int, language: SupportedLanguage = "English")
 
         time.sleep(0.7)
         
-        file_name = f"screenshot_{uuid.uuid4()}.png"
+        appdata = os.getenv("APPDATA")
+        screenshots_dir = os.path.join(appdata, "Neura Command", "screenshots")
+        os.makedirs(screenshots_dir, exist_ok=True)
+
+        file_name = os.path.join(screenshots_dir, f"screenshot_{uuid.uuid4()}.png")
+
         screenshot = ImageGrab.grab()
         screenshot.save(file_name)
         
