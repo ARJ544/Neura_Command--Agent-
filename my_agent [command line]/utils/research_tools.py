@@ -87,18 +87,18 @@ def internet_search(
     - The answer is something you can generate from reasoning alone.
 
     Args:
-    - query (str): The text query you want to search for.
-    - max_results (int): Number of results to retrieve (default 4).
-    - topic (str): Search domain — "general", "news", or "finance".
-      Use:
-        • "general" for broad informational searches.
-        • "news" for recent events or breaking updates.
-        • "finance" for markets, stocks, economics, or company profiles.
-    - include_raw_content (bool): If True, includes raw webpage text in results.
+        query (str): The text query you want to search for.
+        max_results (int): Number of results to retrieve (default 4).
+        topic (str): Search domain — "general", "news", or "finance".
+        Use:
+            • "general" for broad informational searches.
+            • "news" for recent events or breaking updates.
+            • "finance" for markets, stocks, economics, or company profiles.
+        include_raw_content (bool): If True, includes raw webpage text in results.
 
-    RETURNS:
-    - A structured list of search results with titles, URLs, summaries,
-      and optionally raw text.
+    Returns:
+        - A structured list of search results with titles, URLs, summaries,
+        and optionally raw text.
     """
     return tavily_client.search(
         query,
