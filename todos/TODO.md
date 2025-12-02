@@ -20,10 +20,10 @@
 - [x] OCR: Read text from screen
 
 ## 5. Terminal Control
-- [ ] Execute commands
-- [ ] Install packages
+- [x] Execute commands
+- [x] Install packages
 <!-- - [ ] Git operations (add/commit/push/pull) -->
-- [ ] Run scripts/commands in terminal
+- [x] Run scripts/commands in terminal
 
 
 <!-- ## 7. Developer Tools Integration
