@@ -4,18 +4,13 @@ import os
 from langchain.tools import tool
 
 @tool
-def change_user_preferences(env_path: str):
-    """Tool used to remove/change user name and preference. Ask user to give env_path (if they know) and say else default is ".env". Use ".env" if user don't know.
-     Args:
-         env_path (str): name of env file default is ".env".
-     Returns:
-         str: Confirmation message.
-     """
+def change_user_preferences():
+    """Tool used to remove/change user name and preference.
+    """
      
-    if env_path is None:
-        appdata = os.getenv("APPDATA")
-        config_dir = os.path.join(appdata, "Neura Command")
-        env_path = os.path.join(config_dir, ".env")
+    appdata = os.getenv("APPDATA")
+    config_dir = os.path.join(appdata, "Neura Command")
+    env_path = os.path.join(config_dir, ".env")
 
     
     if os.path.exists(env_path):
