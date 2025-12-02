@@ -145,7 +145,7 @@ def rename_file(old_name: str, new_name: str, where_to_rename: Literal["Desktop"
         return f"Error renaming file at {old_path}: {e}"
 
 @tool
-def delete_file(file_name: str, where_to_delete: Literal["Desktop", "Documents", "Downloads", "Pictures", "Videos", "Music", "Home"] = "Desktop"
+def delete_file(file_name: str, base_dir_of: Literal["Desktop", "Documents", "Downloads", "Pictures", "Videos", "Music", "Home"] = "Desktop"
 ):
     """
     Moves an existing file to the Recycle Bin inside a chosen base directory.
@@ -156,7 +156,7 @@ def delete_file(file_name: str, where_to_delete: Literal["Desktop", "Documents",
             Name of the file to delete, including extension
             (e.g., "notes.txt", "image.png").
 
-        where_to_delete (str):
+        base_dir_of (str):
             Base directory of the file:
                 - Desktop
                 - Documents
@@ -172,19 +172,19 @@ def delete_file(file_name: str, where_to_delete: Literal["Desktop", "Documents",
 
     home_dir = os.path.expanduser("~")
 
-    if where_to_delete == "Desktop":
+    if base_dir_of == "Desktop":
         base_dir = os.path.join(home_dir, "Desktop")
-    elif where_to_delete == "Documents":
+    elif base_dir_of == "Documents":
         base_dir = os.path.join(home_dir, "Documents")
-    elif where_to_delete == "Downloads":
+    elif base_dir_of == "Downloads":
         base_dir = os.path.join(home_dir, "Downloads")
-    elif where_to_delete == "Pictures":
+    elif base_dir_of == "Pictures":
         base_dir = os.path.join(home_dir, "Pictures")
-    elif where_to_delete == "Videos":
+    elif base_dir_of == "Videos":
         base_dir = os.path.join(home_dir, "Videos")
-    elif where_to_delete == "Music":
+    elif base_dir_of == "Music":
         base_dir = os.path.join(home_dir, "Music")
-    elif where_to_delete == "Home":
+    elif base_dir_of == "Home":
         base_dir = home_dir
 
     if "." not in file_name:
