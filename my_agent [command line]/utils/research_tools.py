@@ -22,12 +22,20 @@ os.system("cls" if os.name == "nt" else "clear")
 print("\033c", end="")
 print(welcome_msg)
 
-load_dotenv()
+appdata = os.getenv("APPDATA")
+config_dir = os.path.join(appdata, "Neura Command")
+os.makedirs(config_dir, exist_ok=True)
 
-ENV_PATH = ".env"
+
+ENV_PATH = os.path.join(config_dir, ".env")
+
+
+if os.path.exists(ENV_PATH):
+    load_dotenv(ENV_PATH)
 
 tavily_key = os.getenv("TAVILY_API_KEY")
 name = os.getenv("NAME")
+
 
 if not tavily_key:
     print()
@@ -50,17 +58,16 @@ if not tavily_key:
             if tavily_key:
                 print()
                 break
-        
         with open(ENV_PATH, 'a') as f:
             f.write(f"TAVILY_API_KEY={tavily_key}\n")
-            print(f"\nTAVILY_API_KEY not found!!! Added TAVILY_API_KEY={tavily_key} in .env\n")
+        print(f"\nTAVILY_API_KEY not found! Added TAVILY_API_KEY={tavily_key}\n")
     else:
         tavily_key = "PlaceHolder"
         print("\nProceeding without Tavily API key.\n")
 
 else:
-    print(f"TAVILY_API_KEY found!!! name = {name} tavily_api_key = {tavily_key}\n")
-
+    print(f"TAVILY_API_KEY found! name = {name}, tavily_api_key = {tavily_key}\n")
+    
 tavily_client = TavilyClient(api_key=tavily_key)
 
 @tool

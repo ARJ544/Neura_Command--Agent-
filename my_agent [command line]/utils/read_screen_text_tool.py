@@ -14,13 +14,21 @@ import pyautogui
 from typing import Literal
 from langchain_core.tools import tool
 
-load_dotenv()
+
+appdata = os.getenv("APPDATA")
+config_dir = os.path.join(appdata, "Neura Command")
+os.makedirs(config_dir, exist_ok=True)
+
+env_path = os.path.join(config_dir, ".env")
+
+if os.path.exists(env_path):
+    load_dotenv(env_path)
 ocr_apikey = os.getenv("OCR_API_KEY")
 
 if not ocr_apikey:
-    with open(".env", 'a') as f:
+    with open(env_path, 'a') as f:
         f.write(f"OCR_API_KEY={""}\n")
-        print(f"OCR_API_KEY not found!!! Added OCR_API_KEY in .env\n")
+    print(f"OCR_API_KEY not found! Created .env ")
 
 OCR_LANGUAGES = {
     "English": "eng",

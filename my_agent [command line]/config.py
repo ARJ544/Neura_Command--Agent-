@@ -17,7 +17,14 @@ from InquirerPy import inquirer
 
 load_dotenv()
 
-ENV_PATH = ".env"
+appdata = os.getenv("APPDATA")  # e.g., C:\Users\<User>\AppData\Roaming
+config_dir = os.path.join(appdata, "Neura Command")
+os.makedirs(config_dir, exist_ok=True)
+ENV_PATH = os.path.join(config_dir, ".env")
+
+if os.path.exists(ENV_PATH):
+    load_dotenv(ENV_PATH)
+
 gemini_key = os.getenv("GOOGLE_API_KEY")
 name = os.getenv("NAME")
 
@@ -28,7 +35,8 @@ if not gemini_key:
             break
     with open(ENV_PATH, 'a') as f:
         f.write(f"GOOGLE_API_KEY={gemini_key}\n")
-        print(f"Gemini_Api_Key not found!!! Added GOOGLE_API_KEY={gemini_key} in .env\n")     
+    print(f"Gemini_API_Key not found! Added GOOGLE_API_KEY={gemini_key}\n")
+
 if not name:
     while True:
         name = input("Enter your Name: ").strip()
@@ -36,10 +44,10 @@ if not name:
             break
     with open(ENV_PATH, 'a') as f:
         f.write(f"NAME={name}\n")
-        print(f"NAME not found!!! Added NAME={name} in .env\n")
-else:
-    print(f"Gemini_Api_Key found!!! name = {name} gemini_key = {gemini_key}\n")
+    print(f"NAME not found! Added NAME={name} \n")
 
+else:
+    print(f"Gemini_API_Key found! name = {name}, gemini_key = {gemini_key}\n")
 
 llm_choice = inquirer.select(
     message="Choose an LLM (Use Arrow keys) to select:",
